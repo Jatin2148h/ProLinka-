@@ -1,99 +1,93 @@
 import path from "path";
 import { fileURLToPath } from "url";
 import dotenv from "dotenv";
+import express from "express";
+import cors from "cors";
+import mongoose from "mongoose";
 
-// Get __dirname equivalent for ES modules
+import postRoutes from "./routes/posts.routes.js";
+import userRoutes from "./routes/user.routes.js";
+
+/* =========================
+   __dirname for ES Modules
+========================= */
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// ✅ FIX: Load .env from parent directory (root folder) - .env is in ProLinka/ not ProLinka/backend/
-dotenv.config({ path: path.join(__dirname, '..', '.env') });
+/* =========================
+   ENV CONFIG (Local Dev)
+========================= */
+dotenv.config({ path: path.join(__dirname, ".env") });
 
 
-// DEBUG: Check if env variables are loaded
+/* =========================
+   DEBUG (Optional - Remove later)
+========================= */
 console.log("🔍 DEBUG - Environment Variables:");
 console.log("CLOUDINARY_CLOUD_NAME:", process.env.CLOUDINARY_CLOUD_NAME);
 console.log("CLOUDINARY_API_KEY:", process.env.CLOUDINARY_API_KEY ? "✅ Set" : "❌ Not Set");
 console.log("CLOUDINARY_API_SECRET:", process.env.CLOUDINARY_API_SECRET ? "✅ Set" : "❌ Not Set");
 
-import express from "express";
-import cors from "cors";
-import mongoose from "mongoose";
-import postRoutes from "./routes/posts.routes.js";
-import userRoutes from "./routes/user.routes.js";
-
-
-
+/* =========================
+   APP INIT
+========================= */
 const app = express();
 
 /* =========================
-   BODY PARSER (REQUIRED)
+   MIDDLEWARES
 ========================= */
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-/* =========================
-   CORS FIX (MAIN BUG)
-========================= */
 app.use(
   cors({
-    origin: "http://localhost:3000",
+    origin: ["http://localhost:3000"], // frontend URL add kar sakta hai baad me
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
   })
 );
 
-/* =========================
-   PREFLIGHT FIX
-========================= */
 app.options("*", cors());
 
 /* =========================
-   HEALTH CHECK (ADD)
+   ROOT + HEALTH ROUTES
 ========================= */
+app.get("/", (req, res) => {
+  res.send("🚀 ProLinka API is running");
+});
+
 app.get("/health", (req, res) => {
-  return res.status(200).json({ message: "SERVER RUNNING" });
+  res.status(200).json({ message: "SERVER RUNNING" });
 });
 
 /* =========================
-   ROUTES WITH BASE PATH
+   API ROUTES
 ========================= */
 app.use("/api/posts", postRoutes);
 app.use("/api/users", userRoutes);
 
-
 /* =========================
-   STATIC FILES (IMPROVED)
+   STATIC FILES
 ========================= */
-
-// ❌ original kept
-app.use(express.static("uploads"));
-
-// ✅ ADD: explicit uploads path (frontend safe)
-// Note: __dirname is already defined at the top of the file
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
-
 
 /* =========================
    SERVER START
 ========================= */
 const start = async () => {
   try {
-    await mongoose.connect(
-      process.env.MONGO_URI || // ✅ ADD (preferred)
-        "mongodb+srv://agrawaljatin157_db_user:XMq7PbAI0uMO5lca@prolinka.wcwhmzh.mongodb.net/ProLinka"
-    );
+    await mongoose.connect(process.env.MONGO_URI);
 
-    console.log("MongoDB Connected");
+    console.log("✅ MongoDB Connected");
 
-    app.listen(9090, () => {
-      console.log("Server is running on port 9090");
+    const PORT = process.env.PORT || 9090;
 
-
+    app.listen(PORT, () => {
+      console.log("🚀 Server is running on port", PORT);
     });
   } catch (error) {
-    console.log("MongoDB connection error:", error.message);
+    console.error("❌ MongoDB connection error:", error.message);
   }
 };
 
