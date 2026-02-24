@@ -1,0 +1,398 @@
+/* My Connections Page Styles */
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 24px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    min-height: 100vh;
+}
+
+
+.sectionTitle {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--text-main);
+    margin: 2rem 0 1rem 0;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #0077b5;
+}
+
+
+.sectionTitle:first-child {
+    margin-top: 0;
+}
+
+.emptyMessage {
+    color: var(--text-secondary);
+    font-style: italic;
+    padding: 1rem;
+    background: var(--card-bg);
+    border-radius: 8px;
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.15);
+}
+
+
+/* User Card Styles */
+.userCard {
+    background: var(--card-bg);
+    border-radius: 8px;
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.15);
+    padding: 16px;
+    margin-bottom: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+
+.userCard:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px);
+}
+
+.userCardContent {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.userInfoSection {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 1;
+}
+
+/* Profile Picture */
+.profilePicture {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 2px solid #e0e0e0;
+    flex-shrink: 0;
+}
+
+.profilePicture img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* User Info */
+.userInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.userInfo h3 {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-main);
+}
+
+
+.userInfo p {
+    margin: 0;
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+}
+
+
+/* Button Container */
+.buttonContainer {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+/* Accept Button */
+.acceptButton {
+    background: linear-gradient(135deg, #28a745, #218838);
+    color: white;
+    border: none;
+    padding: 8px 20px;
+    border-radius: 20px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(40, 167, 69, 0.3);
+    min-width: 90px;
+    text-align: center;
+}
+
+.acceptButton:hover:not(:disabled) {
+    background: linear-gradient(135deg, #218838, #1e7e34);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(40, 167, 69, 0.4);
+}
+
+.acceptButton:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+.acceptButton:disabled {
+    background: #6c757d;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+/* Reject Button */
+.rejectButton {
+    background: linear-gradient(135deg, #dc3545, #c82333);
+    color: white;
+    border: none;
+    padding: 8px 20px;
+    border-radius: 20px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(220, 53, 69, 0.3);
+    min-width: 90px;
+    text-align: center;
+}
+
+.rejectButton:hover:not(:disabled) {
+    background: linear-gradient(135deg, #c82333, #bd2130);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(220, 53, 69, 0.4);
+}
+
+.rejectButton:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+.rejectButton:disabled {
+    background: #6c757d;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+/* Connected Button (for accepted connections) */
+.connectedButton {
+    background: linear-gradient(135deg, #0077b5, #005885);
+    color: white;
+    border: none;
+    padding: 8px 20px;
+    border-radius: 20px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0, 119, 181, 0.3);
+    min-width: 90px;
+    text-align: center;
+}
+
+.connectedButton:hover:not(:disabled) {
+    background: linear-gradient(135deg, #005885, #004b6b);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 119, 181, 0.4);
+}
+
+.connectedButton:disabled {
+    background: #6c757d;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+/* Status Badges */
+.statusBadge {
+    padding: 6px 12px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.pendingBadge {
+    background: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffeaa7;
+}
+
+.connectedBadge {
+    background: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+/* ==================== */
+/* MEDIA QUERIES       */
+/* ==================== */
+
+/* Tablet (768px and below) */
+@media (max-width: 768px) {
+    .container {
+        padding: 16px;
+    }
+
+    .sectionTitle {
+        font-size: 1.25rem;
+    }
+
+    .userCardContent {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .userInfoSection {
+        width: 100%;
+    }
+
+    .buttonContainer {
+        width: 100%;
+        justify-content: flex-start;
+        margin-top: 8px;
+    }
+
+    .acceptButton,
+    .rejectButton,
+    .connectedButton {
+        padding: 8px 16px;
+        font-size: 0.8rem;
+        min-width: 80px;
+        flex: 1;
+        max-width: 120px;
+    }
+
+    .profilePicture {
+        width: 50px;
+        height: 50px;
+    }
+
+    .userInfo h3 {
+        font-size: 0.95rem;
+    }
+
+    .userInfo p {
+        font-size: 0.8rem;
+    }
+}
+
+/* Mobile (480px and below) */
+@media (max-width: 480px) {
+    .container {
+        padding: 12px;
+    }
+
+    .sectionTitle {
+        font-size: 1.1rem;
+        margin: 1.5rem 0 0.75rem 0;
+    }
+
+    .userCard {
+        padding: 12px;
+    }
+
+    .userCardContent {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .userInfoSection {
+        gap: 10px;
+    }
+
+    .buttonContainer {
+        width: 100%;
+        flex-direction: row;
+        gap: 8px;
+    }
+
+    .acceptButton,
+    .rejectButton,
+    .connectedButton {
+        padding: 6px 12px;
+        font-size: 0.75rem;
+        min-width: 70px;
+        border-radius: 16px;
+        flex: 1;
+    }
+
+    /* Simplified gradients for mobile performance */
+    .acceptButton {
+        background: #28a745;
+    }
+
+    .rejectButton {
+        background: #dc3545;
+    }
+
+    .connectedButton {
+        background: #0077b5;
+    }
+
+    .profilePicture {
+        width: 45px;
+        height: 45px;
+    }
+
+    .userInfo h3 {
+        font-size: 0.9rem;
+    }
+
+    .userInfo p {
+        font-size: 0.75rem;
+    }
+
+    .statusBadge {
+        font-size: 0.7rem;
+        padding: 4px 8px;
+    }
+}
+
+/* Small Mobile (360px and below) */
+@media (max-width: 360px) {
+    .container {
+        padding: 8px;
+    }
+
+    .buttonContainer {
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .acceptButton,
+    .rejectButton,
+    .connectedButton {
+        width: 100%;
+        max-width: none;
+    }
+}
+
+/* Desktop (1200px and above) */
+@media (min-width: 1200px) {
+    .container {
+        max-width: 1400px;
+        padding: 32px;
+    }
+
+    .userCard {
+        padding: 20px;
+    }
+
+    .profilePicture {
+        width: 70px;
+        height: 70px;
+    }
+
+    .userInfo h3 {
+        font-size: 1.1rem;
+    }
+
+    .acceptButton,
+    .rejectButton,
+    .connectedButton {
+        padding: 10px 24px;
+        font-size: 0.9rem;
+        min-width: 100px;
+    }
+}

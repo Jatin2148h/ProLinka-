@@ -1,0 +1,345 @@
+/* =========================
+   ROOT CONTAINER
+========================= */
+.container {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(
+      135deg,
+      rgba(20, 20, 60, 0.65),
+      rgba(0, 0, 0, 0.75)
+    ),
+    url("/bg-auth.jpg");
+  background-size: cover;
+  background-position: center;
+  padding: 20px;
+}
+
+/* =========================
+   GLASS CARD
+========================= */
+.card {
+  width: 900px;
+  max-width: 100%;
+  height: 520px;
+  display: flex;
+  overflow: hidden;
+  border-radius: 18px;
+
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.35);
+  animation: scaleIn 0.6s ease;
+}
+
+/* =========================
+   LEFT PANEL (INFO)
+========================= */
+.leftPanel {
+  width: 45%;
+  background: linear-gradient(135deg, #0a66c2, #004182);
+  color: #fff;
+  padding: 50px 35px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  animation: slideLeft 0.8s ease;
+}
+
+.leftPanel h2 {
+  font-size: 30px;
+  margin-bottom: 12px;
+}
+
+.leftPanel p {
+  font-size: 15px;
+  line-height: 1.6;
+  opacity: 0.9;
+}
+
+.leftPanel .switchBtn {
+  margin-top: 35px;
+  padding: 12px;
+  border-radius: 25px;
+  border: 1px solid #fff;
+  background: transparent;
+  color: #fff;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.leftPanel .switchBtn:hover {
+  background: #fff;
+  color: #004182;
+}
+
+/* =========================
+   RIGHT PANEL (FORM)
+========================= */
+.rightPanel {
+  width: 55%;
+  padding: 45px 40px;
+  background: rgba(255, 255, 255, 0.9);
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  animation: slideRight 0.8s ease;
+}
+
+.rightPanel h2 {
+  font-size: 26px;
+  margin-bottom: 15px;
+  text-align: center;
+}
+
+/* =========================
+   INPUTS
+========================= */
+.rightPanel input {
+  width: 100%;
+  padding: 12px 14px;
+  margin-bottom: 14px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  outline: none;
+  font-size: 14px;
+}
+
+.rightPanel input:focus {
+  border-color: #0a66c2;
+}
+
+/* =========================
+   BUTTON
+========================= */
+.rightPanel button {
+  width: 100%;
+  padding: 12px;
+  margin-top: 5px;
+  border-radius: 25px;
+  border: none;
+  cursor: pointer;
+
+  background: #0a66c2;
+  color: #fff;
+  font-weight: 600;
+  transition: 0.3s;
+}
+
+.rightPanel button:hover {
+  background: #004182;
+}
+
+.rightPanel button:disabled {
+  background: #9bbce0;
+  cursor: not-allowed;
+}
+
+/* =========================
+   TOGGLE TEXT (MOBILE)
+========================= */
+.toggle {
+  text-align: center;
+  margin-top: 15px;
+  font-size: 14px;
+  color: #0a66c2;
+  cursor: pointer;
+}
+
+/* =========================
+   MESSAGE STYLES
+========================= */
+.success {
+  background: rgba(46, 204, 113, 0.15);
+  color: #2ecc71;
+  padding: 10px;
+  border-radius: 6px;
+  font-size: 14px;
+  margin-bottom: 12px;
+  animation: fadeIn 0.4s ease;
+}
+
+.error {
+  background: rgba(231, 76, 60, 0.15);
+  color: #e74c3c;
+  padding: 10px;
+  border-radius: 6px;
+  font-size: 14px;
+  margin-bottom: 12px;
+  animation: shake 0.4s ease;
+}
+
+/* =========================
+   ANIMATIONS
+========================= */
+@keyframes slideLeft {
+  from {
+    transform: translateX(-40px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideRight {
+  from {
+    transform: translateX(40px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-4px);
+  }
+  75% {
+    transform: translateX(4px);
+  }
+}
+
+/* =========================
+   RESPONSIVE (MOBILE)
+========================= */
+@media (max-width: 768px) {
+  .container {
+    padding: 15px;
+  }
+
+  .card {
+    flex-direction: column;
+    height: auto;
+    border-radius: 16px;
+  }
+
+  .leftPanel {
+    width: 100%;
+    padding: 28px 22px;
+    text-align: center;
+  }
+
+  .leftPanel h2 {
+    font-size: 24px;
+  }
+
+  .leftPanel p {
+    font-size: 14px;
+  }
+
+  .rightPanel {
+    width: 100%;
+    padding: 28px 22px;
+  }
+}
+@media (max-width: 480px) {
+  .container {
+    align-items: flex-start;
+    padding-top: 30px;
+  }
+
+  .card {
+    width: 100%;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+  }
+
+  .leftPanel {
+    padding: 22px 18px;
+  }
+
+  .leftPanel h2 {
+    font-size: 22px;
+  }
+
+  .leftPanel p {
+    font-size: 13px;
+    line-height: 1.5;
+  }
+
+  .leftPanel .switchBtn {
+    width: 100%;
+    margin-top: 20px;
+  }
+
+  .rightPanel {
+    padding: 22px 18px;
+  }
+
+  .rightPanel h2 {
+    font-size: 22px;
+  }
+
+  .rightPanel input {
+    padding: 14px;
+    font-size: 15px;
+  }
+
+  .rightPanel button {
+    padding: 14px;
+    font-size: 15px;
+  }
+
+  .toggle {
+    font-size: 13px;
+  }
+}
+@media (max-width: 360px) {
+  .leftPanel h2 {
+    font-size: 20px;
+  }
+
+  .rightPanel h2 {
+    font-size: 20px;
+  }
+
+  .rightPanel input {
+    padding: 12px;
+    font-size: 14px;
+  }
+
+  .rightPanel button {
+    padding: 12px;
+    font-size: 14px;
+  }
+
+  .success,
+  .error {
+    font-size: 13px;
+  }
+}

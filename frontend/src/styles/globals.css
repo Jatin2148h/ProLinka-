@@ -1,0 +1,101 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  /* Light Mode Colors */
+  --bg-gradient: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  --card-bg: rgba(255, 255, 255, 0.7);
+  --text-main: #1a1a1a;
+  --text-secondary: #444;
+  --accent: #de1435;
+  --nav-bg: rgba(255, 255, 255, 0.8);
+  --shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+  
+  /* Profile/Dashboard/ViewProfile Page Variables */
+  --bg-primary: #f0f2f5;
+  --bg-input: #f8f9fa;
+  --text-muted: #8a8d91;
+  --border-color: #e4e6eb;
+  --shadow-card: 0 2px 12px rgba(0, 0, 0, 0.1);
+  --shadow-hover: 0 4px 20px rgba(0, 0, 0, 0.15);
+  --primary-blue: #1877f2;
+  --primary-hover: #166fe5;
+  --success: #28a745;
+  --success-hover: #36a420;
+  --danger: #ef4444;
+  --danger-hover: #dc2626;
+}
+
+
+[data-theme="dark"] {
+  /* Dark Mode Colors - Glass/Transparent Effect */
+  --bg-gradient: linear-gradient(135deg, rgba(15, 12, 41, 0.95) 0%, rgba(48, 43, 99, 0.9) 50%, rgba(36, 36, 62, 0.95) 100%);
+  --card-bg: rgba(30, 30, 40, 0.4);
+  --text-main: #ffffff;
+  --text-secondary: #cccccc;
+  --accent: #ff4d6d;
+  --nav-bg: rgba(20, 20, 30, 0.5);
+  --shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+  
+  /* Profile/Dashboard/ViewProfile Page Variables - Glass Effect */
+  --bg-primary: rgba(24, 25, 26, 0.3);
+  --bg-input: rgba(58, 59, 60, 0.4);
+  --text-muted: #8a8d91;
+  --border-color: rgba(255, 255, 255, 0.1);
+  --shadow-card: 0 2px 12px rgba(0, 0, 0, 0.2);
+  --shadow-hover: 0 4px 20px rgba(0, 0, 0, 0.3);
+  --primary-blue: #4599ff;
+  --primary-hover: #1877f2;
+  --success: #42b72a;
+  --success-hover: #5dd645;
+  --danger: #ff4444;
+  --danger-hover: #ff6666;
+}
+
+
+
+html, body {
+  font-family: 'Poppins', sans-serif;
+  background: var(--bg-gradient);
+  color: var(--text-main);
+  transition: background 0.5s ease, color 0.5s ease;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+/* =========================
+   THEME SLIDE TRANSITION
+========================= */
+
+html {
+  position: relative;
+  overflow-x: hidden;
+}
+
+html::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+
+  background: var(--bg-gradient);
+
+  transform: translateX(-100%);
+  transition: transform 5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* DARK MODE SLIDE IN */
+[data-theme="dark"]::before {
+  transform: translateX(0);
+}
+
+/* IMPORTANT */
+html, body {
+  background: transparent;
+  color: var(--text-main);
+  transition: color 0.8s ease;
+}

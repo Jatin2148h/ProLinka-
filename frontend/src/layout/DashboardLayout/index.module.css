@@ -1,0 +1,169 @@
+.page {
+  width: 100%;
+  min-height: 100vh;
+  background: var(--bg-main);
+}
+
+.container {
+  max-width: 1300px;
+  margin: 0 auto;
+  display: flex;
+  min-height: calc(100vh - 70px);
+  position: relative;
+}
+
+/* ================= LEFT ================= */
+.leftBar {
+  width: 20%;
+  padding: 1.5rem;
+  border-right: 1px solid rgba(255,255,255,0.08);
+}
+
+.sideItem {
+  padding: 0.8rem 0;
+  font-weight: 600;
+  cursor: pointer;
+  color: var(--text-main);
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.sideItem:hover {
+  color: var(--accent);
+}
+
+/* SVG Icons in sidebar */
+.sideItem svg {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  transition: color 0.2s ease;
+}
+
+/* ================= CENTER ================= */
+.centerFeed {
+  width: 60%;
+  padding: 2rem;
+  padding-bottom: 5rem; /* Space for mobile bottom nav */
+}
+
+/* ================= RIGHT ================= */
+.rightBar {
+  width: 20%;
+  padding: 1.5rem;
+  border-left: 1px solid rgba(255,255,255,0.08);
+}
+
+.rightBar h3 {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-main);
+  margin-bottom: 1rem;
+}
+
+/* SVG Icon in Top Profile heading */
+.rightBar h3 svg {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+}
+
+.profileCard {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  margin-top: 1rem;
+}
+
+.profileCard img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+/* ================= MOBILE BOTTOM NAVIGATION ================= */
+.mobileBottomNav {
+  display: none; /* Hidden on desktop */
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--bg-card, #1a1a1a);
+  border-top: 1px solid rgba(255,255,255,0.08);
+  padding: 0.75rem 1rem;
+  justify-content: space-around;
+  align-items: center;
+  z-index: 1000;
+  box-shadow: 0 -4px 20px rgba(0,0,0,0.3);
+}
+
+.mobileNavItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 12px;
+  transition: all 0.2s ease;
+  color: var(--text-secondary, #888);
+}
+
+.mobileNavItem:hover {
+  background: rgba(255,255,255,0.05);
+  color: var(--text-main);
+}
+
+.mobileNavItem.active {
+  color: var(--accent, #3b82f6);
+  background: rgba(59, 130, 246, 0.1);
+}
+
+.mobileNavItem svg {
+  width: 28px;
+  height: 28px;
+  stroke-width: 1.5;
+}
+
+/* ================= MOBILE RESPONSIVE ================= */
+@media (max-width: 900px) {
+  .leftBar {
+    display: none;
+  }
+
+  .rightBar {
+    display: none;
+  }
+
+  .centerFeed {
+    width: 100%;
+    padding: 1rem;
+    padding-bottom: 5rem; /* Space for bottom nav */
+  }
+
+  .container {
+    min-height: calc(100vh - 60px);
+  }
+
+  /* Show mobile bottom navigation */
+  .mobileBottomNav {
+    display: flex;
+  }
+}
+
+/* Extra small devices */
+@media (max-width: 480px) {
+  .mobileNavItem svg {
+    width: 24px;
+    height: 24px;
+  }
+
+  .mobileBottomNav {
+    padding: 0.5rem;
+  }
+}

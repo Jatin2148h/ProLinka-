@@ -1,0 +1,1069 @@
+/* =====================================================
+   🔥 ADDITIONAL DASHBOARD LAYOUT (ADD ONLY)
+   Note: CSS Variables are now defined in globals.css
+===================================================== */
+
+
+/* 🔥 FORCE CENTER FEED FIX */
+.dashboardGrid {
+  max-width: 95% !important;
+}
+
+@media (min-width: 1024px) {
+  .dashboardGrid {
+    grid-template-columns: 260px minmax(600px, 1fr) 320px !important;
+  }
+}
+
+.feedSection {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.rightSidebar {
+  background: var(--card-bg, #fff);
+  padding: 1rem;
+  border-radius: 14px;
+  height: fit-content;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.06);
+  position: sticky;
+  top: 90px;
+}
+
+.rightSidebar h3 {
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 0.8rem;
+}
+
+.profileRow {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.45rem 0;
+}
+
+.profileRow p {
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.profileRow span {
+  font-size: 0.75rem;
+  color: #666;
+}
+
+.smallAvatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+/* =====================================================
+   ✨ NEW ADDITIONS FOR LINKEDIN-STYLE UI (ADD ONLY)
+===================================================== */
+
+.actionBtn {
+  background: transparent;
+  border: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #666666;
+  font-weight: 600;
+  padding: 10px 15px;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background 0.2s ease;
+  font-size: 0.9rem;
+}
+
+.actionBtn:hover {
+  background: #f3f3f3;
+  color: #000;
+}
+
+.textArea {
+  min-height: 50px !important; /* Ensure it doesn't shrink too much */
+}
+
+/* =====================================================
+   ✅ YOUR ORIGINAL CSS (UNCHANGED)
+===================================================== */
+
+/* ================= ROOT ================= */
+.scrollComponet {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* ================= CREATE POST ================= */
+.createPostContainer {
+  background: var(--card-bg, #fff);
+  padding: 1.2rem;
+  border-radius: 14px;
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.06);
+  width: 100%;
+}
+
+.userProfile {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+/* textarea */
+.textArea {
+  flex: 1;
+  border: none;
+  resize: none;
+  font-size: 0.95rem;
+  padding: 0.6rem;
+  outline: none;
+  background: var(--card-bg);
+  border-radius: 10px;
+  min-height: 60px;
+  width: 100%;
+  box-sizing: border-box;
+  color: var(--text-main);
+}
+
+
+.textArea::placeholder {
+  color: var(--text-secondary);
+}
+
+
+/* upload icon */
+.Fab {
+  width: 38px;
+  height: 38px;
+  background: #eef2ff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 1.4rem;
+  color: #4f46e5;
+  transition: all 0.25s ease;
+}
+
+.Fab:hover {
+  background: #4f46e5;
+  color: #fff;
+  transform: scale(1.05);
+}
+
+/* ================= FIXED PLUS ICON ================= */
+.plusIcon {
+  width: 38px;
+  height: 38px;
+  background: #eef2ff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 1.4rem;
+  color: #4f46e5;
+  transition: all 0.25s ease;
+}
+
+.plusIcon:hover {
+  background: #4f46e5;
+  color: #fff;
+  transform: scale(1.05);
+}
+
+/* post button */
+.uploadButton {
+  margin-left: auto;
+  padding: 0.45rem 1.2rem;
+  border-radius: 999px;
+  background: #4f46e5;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.uploadButton:hover {
+  background: #3730a3;
+}
+
+/* ================= INPUT WRAPPER ================= */
+.inputWrapper {
+  display: flex;
+  gap: 0.6rem;
+  width: 100%;
+  align-items: flex-start;
+}
+
+/* ================= POST BUTTON CONTAINER ================= */
+.postBtnContainer {
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 0.6rem;
+}
+
+/* ================= IMAGE PREVIEW ================= */
+.imagePreviewBox {
+  margin-top: 0.6rem;
+  position: relative;
+}
+
+.imagePreviewBox img {
+  width: 100%;
+  border-radius: 12px;
+  max-height: 320px;
+  object-fit: cover;
+}
+
+.imagePreviewBox button {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: rgba(0,0,0,0.6);
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  cursor: pointer;
+}
+
+/* ================= POSTS ================= */
+.postContent {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.singleCard {
+  background: var(--card-bg, #fff);
+  padding: 1rem 1.2rem;
+  border-radius: 14px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.06);
+  width: 100%;
+}
+
+.singleCard_profileContainer {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.singleCard_profileContainer p:first-child {
+  font-weight: 700;
+}
+
+.singleCard_profileContainer p:nth-child(2) {
+  font-size: 0.85rem;
+  color: #666;
+}
+
+.postInfo {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+
+/* post body */
+.postBody {
+  margin-top: 0.6rem;
+}
+
+.singleCard_image {
+  margin-top: 0.6rem;
+}
+
+.singleCard_image img {
+  width: 100%;
+  border-radius: 12px;
+  max-height: 380px;
+  object-fit: cover;
+}
+
+/* delete button */
+.deleteIconBtn {
+  margin-left: auto;
+  background: transparent;
+  border: none;
+  color: #ef4444;
+  cursor: pointer;
+  font-size: 1.1rem;
+}
+
+/* actions */
+.cardActions {
+  display: flex;
+  gap: 1.2rem;
+  margin-top: 0.6rem;
+  font-size: 0.9rem;
+  color: #555;
+  border-top: 1px solid #f3f3f3;
+  padding-top: 5px;
+ 
+  align-items: center;
+  justify-content: space-around;
+  padding: 10px 0;
+  overflow: visible; /* 🔥 IMPORTANT */
+}
+
+/* ================= FEED HEADER IMAGE ================= */
+.feedHeaderCard img {
+  width: 100%;
+  border-radius: 16px;
+  max-height: 220px;
+  object-fit: cover;
+}
+
+/* ================= LOADER ================= */
+.loaderCenter {
+  min-height: 35vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #666;
+}
+
+.spinner {
+  width: 42px;
+  height: 42px;
+  border: 4px solid #e5e7eb;
+  border-top: 4px solid #4f46e5;
+  border-radius: 50%;
+  animation: spin 0.9s linear infinite;
+  margin-bottom: 10px;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ================= FULL PAGE LOADER ================= */
+.fullPageLoader {
+  min-height: 70vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 0.8rem;
+  color: #666;
+}
+
+/* ================= RESPONSIVE ================= */
+@media (max-width: 1200px) {
+  .dashboardGrid {
+    max-width: 95% !important;
+  }
+}
+
+@media (max-width: 1024px) {
+  .dashboardGrid {
+    grid-template-columns: 1fr !important;
+    max-width: 100% !important;
+  }
+
+  .rightSidebar {
+    position: static;
+    margin-top: 1rem;
+    display: none; /* Hide sidebar on tablet for cleaner look */
+  }
+}
+
+@media (max-width: 900px) {
+  .dashboardGrid {
+    grid-template-columns: 1fr;
+    max-width: 100%;
+  }
+
+  .rightSidebar {
+    position: static;
+    margin-top: 1rem;
+  }
+  
+  .singleCard_image img {
+    max-height: 350px;
+  }
+}
+
+@media (max-width: 768px) {
+  .createPostContainer {
+    flex-direction: column;
+    padding: 1rem;
+  }
+
+  .uploadButton {
+    align-self: flex-end;
+  }
+  
+  .userProfile {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .textArea {
+    font-size: 0.9rem;
+  }
+  
+  .singleCard {
+    padding: 0.8rem;
+  }
+  
+  .singleCard_image img {
+    max-height: 300px;
+  }
+  
+  .postInfo .name {
+    font-size: 0.9rem;
+  }
+  
+  .postInfo .handle {
+    font-size: 0.8rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .dashboardGrid {
+    padding: 0 10px;
+  }
+  
+  .createPostContainer {
+    padding: 0.8rem;
+    border-radius: 10px;
+  }
+  
+  .plusIcon {
+    width: 34px;
+    height: 34px;
+    font-size: 1.2rem;
+  }
+  
+  .uploadButton {
+    padding: 0.4rem 1rem;
+    font-size: 0.85rem;
+  }
+  
+  .singleCard {
+    padding: 0.7rem;
+    border-radius: 10px;
+  }
+  
+  .singleCard_profileContainer {
+    gap: 0.7rem;
+  }
+  
+  .userProfile {
+    width: 36px;
+    height: 36px;
+  }
+  
+  .singleCard_image img {
+    max-height: 250px;
+    border-radius: 8px;
+  }
+  
+  .cardActions {
+    padding: 8px 0;
+  }
+  
+  .likeBtn, .actionBtn {
+    padding: 8px;
+  }
+  
+  .likeIcon {
+    width: 20px;
+    height: 20px;
+  }
+  
+  /* Comment modal mobile fix */
+  .commentModalCard {
+    width: 100%;
+    height: 100%;
+    border-radius: 0;
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 10px;
+  }
+  
+  .createPostContainer {
+    padding: 0.7rem;
+  }
+  
+  .textArea {
+    min-height: 45px !important;
+    font-size: 0.85rem;
+  }
+  
+  .singleCard {
+    padding: 0.6rem;
+  }
+  
+  .postBody p {
+    font-size: 0.9rem;
+  }
+  
+  .singleCard_image img {
+    max-height: 200px;
+  }
+  
+  .cardActions {
+    gap: 0.5rem;
+  }
+  
+  .likeCount {
+    font-size: 0.65rem;
+    padding: 1px 5px;
+    min-width: 16px;
+    height: 16px;
+  }
+  
+  .postBtnContainer {
+    margin-top: 0.4rem;
+  }
+  
+  .uploadButton {
+    padding: 0.35rem 0.9rem;
+    font-size: 0.8rem;
+  }
+}
+
+@media (max-width: 360px) {
+  .singleCard_image img {
+    max-height: 180px;
+  }
+  
+  .likeBtn span,
+  .actionBtn span {
+    display: none;
+  }
+  
+  .likeBtn, .actionBtn {
+    gap: 4px;
+  }
+}
+
+ 
+
+@keyframes slideUp {
+  from { bottom: -50px; opacity: 0; }
+  to { bottom: 20px; opacity: 1; }
+}
+/* Custom Modal Overlay */
+.modalOverlay {
+  position: fixed;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 9999;
+}
+
+.customModal {
+  background: white;
+  padding: 25px;
+  border-radius: 12px;
+  width: 90%; max-width: 400px;
+  text-align: center;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+.modalActions {
+  display: flex; gap: 10px; justify-content: center; margin-top: 20px;
+}
+
+.cancelBtn {
+  background: #eee; color: #333;
+  padding: 10px 20px; border-radius: 20px; border: none; cursor: pointer;
+}
+
+.confirmBtn {
+  background: #df3b3b; color: white;
+  padding: 10px 20px; border-radius: 20px; border: none; cursor: pointer;
+}
+
+
+
+@keyframes slideUp {
+  from { bottom: -100px; } to { bottom: 30px; }
+}/* --- CENTER MODAL STYLES --- */
+.modalOverlay {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0, 0, 0, 0.7); /* Dark semi-transparent background */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  backdrop-filter: blur(4px); /* Modern blur effect */
+}
+
+.customModal {
+  background: #1e1e2d; /* Professional Dark Background */
+  color: white;
+  padding: 30px;
+  border-radius: 16px;
+  width: 350px;
+  text-align: center;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+}
+
+.modalHeader h3 {
+  margin: 0 0 15px 0;
+  font-size: 20px;
+  color: #ef4444; /* Red color for warning */
+}
+
+.modalBody p {
+  font-size: 15px;
+  line-height: 1.5;
+  color: #ccc;
+}
+
+.modalActions {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  margin-top: 25px;
+}
+
+.cancelBtn {
+  background: #3f3f51;
+  color: white;
+  border: none;
+  padding: 10px 25px;
+  border-radius: 25px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.cancelBtn:hover { background: #4f4f61; }
+
+.confirmBtn {
+  background: #ef4444; /* Dangerous Red */
+  color: white;
+  border: none;
+  padding: 10px 25px;
+  border-radius: 25px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.confirmBtn:hover { background: #dc2626; }
+
+
+
+@keyframes slideDown {
+  from { top: -100px; opacity: 0; }
+  to { top: 30px; opacity: 1; }
+}
+/* --- ACTIONS ROW --- */
+.cardActions {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 8px 0;
+  margin-top: 10px;
+  border-top: 1px solid rgba(128, 128, 128, 0.2); /* Light border for both themes */
+  overflow: visible !important;
+}
+
+.cardAction1, .cardAction2, .cardAction3 {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: visible !important;
+  cursor: pointer;
+}
+
+/* --- BUTTON BASE --- */
+.likeBtn, .actionBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: transparent;
+  border: none;
+  outline: none;
+  
+  /* 🔹 Theme Fix: Black BG pe White, White BG pe Black automatically */
+  color: inherit; 
+  opacity: 0.8; /* Thoda subtle look ke liye */
+
+  font-weight: 600;
+  padding: 10px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-height: 44px;
+  width: 95%;
+  overflow: visible !important;
+}
+
+/* Hover Effect */
+.likeBtn:hover, .actionBtn:hover {
+  background: rgba(128, 128, 128, 0.15);
+  opacity: 1;
+}
+
+/* --- ICON STYLE --- */
+.likeIcon {
+  width: 22px;
+  height: 22px;
+  display: block;
+  flex-shrink: 0;
+  stroke: currentColor; /* Text color ke saath match karega (White/Black) */
+  stroke-width: 1.8;
+}
+
+/* --- ACTIVE STATE (Like karne par Blue) --- */
+.activeLike {
+  color: #0a66c2 !important; /* Proper LinkedIn Blue */
+  opacity: 1 !important;
+}
+
+.activeLike .likeIcon {
+  fill: #0a66c2; /* Click hone par icon bhar jayega */
+  stroke: #0a66c2;
+}
+
+/* --- LIKE COUNT BADGE (Always Visible) --- */
+.likeCount {
+  font-size: 0.8rem;
+  font-weight: 700;
+  background: #0a66c2; /* Blue Background taaki highlight ho */
+  color: #ffffff !important; /* Text hamesha white rahega badge par */
+  padding: 2px 8px;
+  border-radius: 12px;
+  margin-left: 4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+}
+
+
+/*comments*/
+
+/* --- COMMENT MODAL OVERLAY --- */
+.commentsOverlay {
+  position: fixed;
+  top: 0; 
+  left: 0; 
+  width: 100%; 
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7); /* Background darken for focus */
+  display: flex; 
+  align-items: center; 
+  justify-content: center;
+  z-index: 10000;
+}
+
+/* --- COMMENT MODAL CARD --- */
+.commentModalCard {
+  background: var(--card-bg);
+  color: var(--text-main);
+  width: 90%; 
+  max-width: 550px;
+  height: 550px; 
+  border-radius: 8px;
+  display: flex; 
+  flex-direction: column;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+  border: 1px solid rgba(128, 128, 128, 0.2);
+  overflow: hidden;
+}
+
+
+/* --- HEADER --- */
+.commentModalHeader {
+  padding: 15px 20px;
+  border-bottom: 1px solid #eeeeee;
+  display: flex; 
+  justify-content: space-between; 
+  align-items: center;
+}
+
+.commentModalHeader h3 { 
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.closeCommentBtn {
+  background: none;
+  border: none;
+  color: var(--text-main);
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+
+/* --- COMMENT LIST AREA --- */
+.commentListWrapper {
+  flex: 1; 
+  padding: 15px; 
+  overflow-y: auto;
+  display: flex; 
+  flex-direction: column; 
+  gap: 12px;
+}
+
+.singleCommentItem {
+  background: var(--card-bg);
+  padding: 12px; 
+  border-radius: 8px;
+  border: 1px solid rgba(128, 128, 128, 0.2);
+}
+
+
+.commentUserHeader { 
+  display: flex; 
+  gap: 10px; 
+  align-items: center; 
+  margin-bottom: 5px; 
+}
+
+.commentUserImg { 
+  width: 36px; 
+  height: 36px; 
+  border-radius: 50%; 
+  object-fit: cover; 
+}
+
+.commentUserName { 
+  font-weight: 600; 
+  font-size: 0.9rem;
+  color: var(--text-main);
+}
+
+
+.deleteCommentTiny {
+  margin-left: auto;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.deleteSvgIcon {
+  width: 16px;
+  color: #ff4d4d;
+}
+
+.commentTextBody { 
+  font-size: 0.9rem;
+  color: var(--text-main);
+  line-height: 1.4;
+}
+
+
+/* --- FOOTER INPUT --- */
+.commentInputFooter {
+  padding: 15px; 
+  border-top: 1px solid rgba(128, 128, 128, 0.2);
+  background: var(--card-bg);
+}
+
+
+.commentInputRow { 
+  display: flex; 
+  gap: 10px; 
+}
+
+.commentInputRow input {
+  flex: 1;
+  padding: 10px 15px; 
+  border: 1px solid rgba(128, 128, 128, 0.2);
+  border-radius: 20px;
+  outline: none;
+  font-size: 0.9rem;
+  background: var(--card-bg);
+  color: var(--text-main);
+}
+
+
+.sendCommentActionButton {
+  background: #0a66c2; /* LinkedIn Solid Blue */
+  color: #ffffff;
+  border: none;
+  padding: 0 15px;
+  border-radius: 20px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.sendCommentActionButton:disabled {
+  background: #cccccc;
+  cursor: not-allowed;
+}
+
+/* --- MOBILE QUERY --- */
+@media (max-width: 600px) {
+  .commentModalCard {
+    width: 100%;
+    height: 100%;
+    border-radius: 0;
+  }
+}
+
+/* =====================================================
+   📱 MOBILE RESPONSIVE: BUTTON TEXT HIDE LOGIC
+===================================================== */
+
+@media (max-width: 600px) {
+  /* 1. Like, Comment, aur Share buttons se text gayab karna */
+  .likeBtn span, 
+  .actionBtn span {
+    display: none !important;
+  }
+
+  /* 2. Buttons ko center align aur compact karna */
+  .cardActions {
+    justify-content: space-between;
+    padding: 10px 15px;
+  }
+
+  .likeBtn, .actionBtn {
+    width: auto;
+    min-width: 50px;
+    padding: 10px;
+    gap: 0; /* Text hatne ke baad gap ki zaroorat nahi */
+  }
+
+  /* 3. Icons ka size thoda adjust karna mobile ke liye */
+  .likeIcon {
+    width: 24px;
+    height: 24px;
+  }
+
+  /* 4. Like Count Badge ko icon ke upar ya side mein set karna */
+  .likeCount {
+    position: relative;
+    font-size: 0.7rem;
+    padding: 1px 6px;
+    margin-left: -5px; /* Icon ke close lane ke liye */
+    z-index: 2;
+  }
+}
+
+/* --- EXISTING MOBILE QUERY REPAIR (NO REMOVE) --- */
+@media (max-width: 600px) {
+  .commentModalCard {
+    width: 100%;
+    height: 100%;
+    border-radius: 0;
+    max-width: 100%;
+  }
+  
+  .dashboardGrid {
+    grid-template-columns: 1fr;
+    max-width: 100%;
+  }
+
+  .createPostContainer {
+    flex-direction: column;
+  }
+  
+  /* Image responsive fix */
+  .singleCard_image {
+    margin-top: 0.5rem;
+  }
+  
+  .singleCard_image img {
+    max-height: 280px;
+    border-radius: 8px;
+  }
+}
+
+/* Extra small devices */
+@media (max-width: 480px) {
+  .singleCard_image img {
+    max-height: 220px;
+  }
+  
+  .commentModalHeader h3 {
+    font-size: 1rem;
+  }
+  
+  .commentUserName {
+    font-size: 0.85rem;
+  }
+  
+  .commentTextBody {
+    font-size: 0.85rem;
+  }
+  
+  .commentInputRow input {
+    padding: 8px 12px;
+    font-size: 0.85rem;
+  }
+  
+  .sendCommentActionButton {
+    padding: 0 12px;
+    font-size: 0.85rem;
+  }
+}
+
+/* =====================================================
+   ✅ TOAST NOTIFICATION: SMALL & SOLID (FIXED)
+===================================================== */
+.toastNotification {
+  position: fixed;
+  top: 20px; /* Screen ke upar dikhega */
+  left: 50%;
+  transform: translateX(-50%);
+  
+  /* 🔥 HEIGHT & WIDTH FIX: Sirf text ke barabar space lega */
+  width: fit-content !important; 
+  min-width: 200px;
+  max-width: 90%;
+  height: auto !important; 
+  
+  /* Design */
+  padding: 10px 20px;
+  border-radius: 8px;
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-align: center;
+  z-index: 100000;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  
+  /* Animation: Smoothly upar se niche aayega */
+  animation: slideDownSmall 0.4s ease-out forwards;
+}
+
+/* Success & Error Colors (Solid, No Transparency) */
+.toastNotification.success { 
+  background: #10b981 !important; /* Proper Green */
+}
+
+.toastNotification.error { 
+  background: #ef4444 !important; /* Proper Red */
+}
+
+@keyframes slideDownSmall {
+  from { top: -100px; opacity: 0; }
+  to { top: 20px; opacity: 1; }
+}

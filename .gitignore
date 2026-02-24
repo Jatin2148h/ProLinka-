@@ -23,6 +23,7 @@ frontend/.env
 frontend/.env.*
 frontend/build/
 frontend/dist/
+frontend/.next/
 
 # ===== OS & Editor =====
 .vscode/
