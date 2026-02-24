@@ -1,0 +1,40 @@
+POST http://localhost:9090/register HTTP/1.1
+content-type: application/json
+
+{
+  "name": "Jatin",
+  "username": "jatin99266",
+  "email": "jatin@test.com",
+  "password": "123456789"
+}
+###
+POST http://localhost:9090/login
+Content-Type: application/json
+
+{
+  "email": "jatin@test.com",
+  "password": "123456789"
+}
+###
+POST  http://localhost:9090/get_user_and_profile HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer {{"token": "d977892f75697e989558b760b396b2783ede88267e2b9e514cd4cc2294811644"}}
+
+###
+POST  http://localhost:9090/get_all_users_profile HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer {{"token": "d977892f75697e989558b760b396b2783ede88267e2b9e514cd4cc2294811644"}}
+
+###
+POST http://localhost:9090/register HTTP/1.1
+content-type: application/json
+
+{
+  "name": "Jatin",
+  "username": "jatin99266",
+  "email": "jatin@test.com",
+  "password": "123456789"
+}
+###
+GET  http://localhost:9090/get_all_users_profile HTTP/1.1
+Content-Type: application/json
