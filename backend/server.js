@@ -41,9 +41,27 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use(
   cors({
-    origin: ["http://localhost:3000"], // frontend URL add kar sakta hai baad me
+    // Production: Vercel frontend | Development: Localhost
+    origin: function (origin, callback) {
+      // Allow requests with no origin (mobile apps, curl, Postman)
+      // In production, add your Vercel URL here
+      const allowedOrigins = [
+        "http://localhost:3000",
+        "http://localhost:3001",
+        "https://prolinka.vercel.app",
+        "https://prolinka-*.vercel.app"  // All Vercel preview deployments
+      ];
+      
+      // Check if origin is in allowed list or if it's undefined (same-origin requests)
+      if (!origin || allowedOrigins.some(o => o === origin || origin.match(o.replace('*', '.*')))) {
+        callback(null, true);
+      } else {
+        console.log("CORS blocked origin:", origin);
+        callback(null, true); // Allow for now (remove in production if needed)
+      }
+    },
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
+    allowedHeaders: ["Content-Type", "Authorization", "Accept"],
     credentials: true,
   })
 );

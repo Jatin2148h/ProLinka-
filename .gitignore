@@ -1,36 +1,75 @@
-# ===== Common =====
-node_modules/
+# ============================================
+# PROLINKA - PRODUCTION GITIGNORE
+# ============================================
+# 
+# IMPORTANT: This ensures secrets are safe!
+# Never commit .env files or secrets to GitHub
+# ============================================
+
+# ============================================
+# ENVIRONMENT VARIABLES (CRITICAL)
+# ============================================
 .env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Never track these (even if someone tries to force add)
+*.env
 .env.*
+
+# ============================================
+# NODE MODULES
+# ============================================
+node_modules/
+node_modules.zip
+
+# ============================================
+# BUILD OUTPUTS
+# ============================================
+.next/
+out/
+build/
+dist/
+
+# ============================================
+# OS FILES
+# ============================================
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+
+# ============================================
+# IDE
+# ============================================
+.vscode/
+.idea/
+*.sublime-*
+
+# ============================================
+# LOGS
+# ============================================
+*.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-pnpm-debug.log*
-.DS_Store
-Thumbs.db
 
-# ===== Backend =====
-backend/node_modules/
-backend/uploads/
-backend/dist/
-backend/build/
-backend/logs/
-!backend/.env
+# ============================================
+# TEST COVERAGE
+# ============================================
+coverage/
 
-# ===== Frontend =====
-frontend/node_modules/
-frontend/.env
-frontend/.env.*
-frontend/build/
-frontend/dist/
-frontend/.next/
+# ============================================
+# TEMP FILES
+# ============================================
+*.tmp
+temp/
+tmp/
 
-# ===== OS & Editor =====
-.vscode/
-.idea/
-*.log
-
-# ===== Cache =====
-.cache/
-.tmp/
-.env
+# ============================================
+# UPLOADS (may contain user data)
+# ============================================
+backend/uploads/*
+!backend/uploads/.gitkeep
