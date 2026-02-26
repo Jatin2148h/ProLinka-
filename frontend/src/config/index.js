@@ -1,56 +1,54 @@
 import axios from "axios";
 
 // ============================================
-// PRODUCTION FIX: Proper BASE_URL configuration
-// ============================================
-// 
-// Issue: window.location.hostname check fails on Vercel SSR
-// Fix: Use explicit environment variable or fallback to production Render URL
-//
-// For Vercel: Set NEXT_PUBLIC_API_URL in Vercel dashboard
-// For local dev: Use localhost
+// PRODUCTION AXIOS CONFIG - PRO-LINKA
 // ============================================
 
-// Check if we're in development (explicit localhost check)
+// Your actual production URLs
+const PRODUCTION_API_URL = "https://prolinka-1.onrender.com";
+const LOCAL_DEV_URL = "http://localhost:9090";
+
+// Check if we're in development
 const isLocalhost = typeof window !== "undefined" && 
-  (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1");
+  (window.location.hostname === "localhost" || 
+   window.location.hostname === "127.0.0.1" ||
+   window.location.hostname.includes("localhost"));
 
-// Use environment variable if set, otherwise use production Render URL
-// For local development: http://localhost:9090
-// For production: https://prolinka-1.onrender.com (your Render URL)
-export const BASE_URL = isLocalhost 
-  ? "http://localhost:9090" 
-  : (process.env.NEXT_PUBLIC_API_URL || "https://prolinka-1.onrender.com");
+// Use local for dev, production for live
+export const BASE_URL = isLocalhost ? LOCAL_DEV_URL : PRODUCTION_API_URL;
 
-console.log("🔍 API Config - Current BASE_URL:", BASE_URL);
-console.log("🔍 API Config - Is Localhost:", isLocalhost);
+// Debug log (only in browser console)
+if (typeof window !== "undefined") {
+  console.log("🔍 API Config - BASE_URL:", BASE_URL);
+  console.log("🔍 API Config - Is Localhost:", isLocalhost);
+}
 
 // ============================================
-// AXIOS CLIENT CONFIG
+// AXIOS CLIENT - WITH CREDENTIALS
 // ============================================
 // 
-// CRITICAL: withCredentials: true requires:
-// 1. Backend CORS must have credentials: true
-// 2. Backend CORS must NOT use wildcard origin "*"
-// 3. Frontend and Backend must be on same secure context OR proper CORS
+// CRITICAL for cookies/auth:
+// - withCredentials: true is REQUIRED
+// - Backend CORS must have credentials: true
+// - No wildcard origin "*" in backend CORS
 // ============================================
 
-// User API client (for user routes)
+// User API client
 export const clientServer = axios.create({
   baseURL: BASE_URL + "/api/users",
-  withCredentials: true,  // Required for cookies/auth
-  timeout: 30000,          // 30 second timeout for Render cold starts
+  withCredentials: true,  // ✅ Required for authentication
+  timeout: 60000,         // 60s timeout (Render free tier is slow to wake)
   headers: {
     "Content-Type": "application/json",
     "Accept": "application/json"
   }
 });
 
-// Post API client (for post routes)
+// Post API client  
 export const postClientServer = axios.create({
   baseURL: BASE_URL + "/api/posts",
-  withCredentials: true,  // Required for cookies/auth
-  timeout: 30000,         // 30 second timeout for Render cold starts
+  withCredentials: true,  // ✅ Required for authentication
+  timeout: 60000,         // 60s timeout
   headers: {
     "Content-Type": "application/json",
     "Accept": "application/json"
@@ -58,14 +56,20 @@ export const postClientServer = axios.create({
 });
 
 // ============================================
-// RESPONSE INTERCEPTOR (Optional - for debugging)
+// RESPONSE INTERCEPTOR - DEBUGGING
 // ============================================
 clientServer.interceptors.response.use(
-  response => response,
+  response => {
+    console.log("✅ API Success:", response.config.url, response.status);
+    return response;
+  },
   error => {
-    console.error("🔴 API Error:", error.message);
     if (error.code === "ECONNABORTED") {
-      console.error("Timeout - Render may be sleeping. Try again in 30-60 seconds.");
+      console.error("⏱️ Timeout - Render may be sleeping. Wait 30-60s and retry.");
+    } else if (error.code === "ERR_NETWORK") {
+      console.error("🌐 Network Error - Check if backend is running.");
+    } else {
+      console.error("🔴 API Error:", error.message);
     }
     return Promise.reject(error);
   }

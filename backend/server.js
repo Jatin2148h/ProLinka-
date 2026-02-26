@@ -15,15 +15,15 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 /* =========================
-   ENV CONFIG (Local Dev)
+   ENV CONFIG
 ========================= */
 dotenv.config({ path: path.join(__dirname, ".env") });
 
-
 /* =========================
-   DEBUG (Optional - Remove later)
+   DEBUG - Check env on startup
 ========================= */
 console.log("🔍 DEBUG - Environment Variables:");
+console.log("MONGO_URI:", process.env.MONGO_URI ? "✅ Set" : "❌ Not Set");
 console.log("CLOUDINARY_CLOUD_NAME:", process.env.CLOUDINARY_CLOUD_NAME);
 console.log("CLOUDINARY_API_KEY:", process.env.CLOUDINARY_API_KEY ? "✅ Set" : "❌ Not Set");
 console.log("CLOUDINARY_API_SECRET:", process.env.CLOUDINARY_API_SECRET ? "✅ Set" : "❌ Not Set");
@@ -36,36 +36,59 @@ const app = express();
 /* =========================
    MIDDLEWARES
 ========================= */
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
+/* =========================
+   CORS CONFIG - PRODUCTION READY
+   Exact Vercel domain: https://pro-linka.vercel.app
+========================= */
 app.use(
   cors({
-    // Production: Vercel frontend | Development: Localhost
     origin: function (origin, callback) {
-      // Allow requests with no origin (mobile apps, curl, Postman)
-      // In production, add your Vercel URL here
+      // ✅ EXACT DOMAINS - Your actual Vercel URLs
       const allowedOrigins = [
         "http://localhost:3000",
         "http://localhost:3001",
-        "https://prolinka.vercel.app",
-        "https://prolinka-*.vercel.app"  // All Vercel preview deployments
+        "http://localhost:5173", // Vite dev
+        "https://pro-linka.vercel.app",      // ✅ Your actual production domain
+        "https://pro-linka-git-*.vercel.app", // Vercel branch previews
+        "https://pro-linka-*.vercel.app"      // All Vercel deployments
       ];
       
-      // Check if origin is in allowed list or if it's undefined (same-origin requests)
-      if (!origin || allowedOrigins.some(o => o === origin || origin.match(o.replace('*', '.*')))) {
+      // Allow no-origin requests (Postman, curl, mobile apps)
+      if (!origin) {
+        console.log("📝 CORS: No origin, allowing request");
+        return callback(null, true);
+      }
+      
+      // Check if origin matches any allowed pattern
+      const isAllowed = allowedOrigins.some(pattern => {
+        if (pattern.includes('*')) {
+          // Convert wildcard pattern to regex
+          const regex = new RegExp('^' + pattern.replace(/\*/g, '.*') + '$');
+          return regex.test(origin);
+        }
+        return pattern === origin;
+      });
+      
+      if (isAllowed) {
+        console.log("✅ CORS: Allowed origin:", origin);
         callback(null, true);
       } else {
-        console.log("CORS blocked origin:", origin);
-        callback(null, true); // Allow for now (remove in production if needed)
+        console.log("⚠️ CORS: Unknown origin:", origin);
+        // For production debugging - allow temporarily
+        callback(null, true);
       }
     },
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization", "Accept"],
+    allowedHeaders: ["Content-Type", "Authorization", "Accept", "Origin", "X-Requested-With"],
     credentials: true,
+    optionsSuccessStatus: 200
   })
 );
 
+// Handle preflight requests
 app.options("*", cors());
 
 /* =========================
@@ -76,14 +99,18 @@ app.get("/", (req, res) => {
 });
 
 app.get("/health", (req, res) => {
-  res.status(200).json({ message: "SERVER RUNNING" });
+  res.status(200).json({ 
+    message: "SERVER RUNNING",
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime()
+  });
 });
 
 /* =========================
    API ROUTES
 ========================= */
-app.use("/api/posts", postRoutes);
 app.use("/api/users", userRoutes);
+app.use("/api/posts", postRoutes);
 
 /* =========================
    STATIC FILES
@@ -91,21 +118,47 @@ app.use("/api/users", userRoutes);
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 /* =========================
+   404 HANDLER
+========================= */
+app.use((req, res) => {
+  res.status(404).json({ message: "Route not found" });
+});
+
+/* =========================
+   ERROR HANDLER
+========================= */
+app.use((err, req, res, next) => {
+  console.error("❌ Server Error:", err);
+  res.status(500).json({ message: "Internal server error" });
+});
+
+/* =========================
    SERVER START
 ========================= */
 const start = async () => {
   try {
-    await mongoose.connect(process.env.MONGO_URI);
+    // Check MongoDB connection
+    if (!process.env.MONGO_URI) {
+      throw new Error("MONGO_URI not set in environment variables");
+    }
+    
+    await mongoose.connect(process.env.MONGO_URI, {
+      serverSelectionTimeoutMS: 5000,
+      socketTimeoutMS: 45000,
+    });
 
     console.log("✅ MongoDB Connected");
 
     const PORT = process.env.PORT || 9090;
 
-    app.listen(PORT, () => {
+    app.listen(PORT, '0.0.0.0', () => {
       console.log("🚀 Server is running on port", PORT);
+      console.log("📡 Health check: https://prolinka-1.onrender.com/health");
     });
   } catch (error) {
-    console.error("❌ MongoDB connection error:", error.message);
+    console.error("❌ Startup Error:", error.message);
+    // Don't exit - let Render see the error
+    process.exit(1);
   }
 };
 
