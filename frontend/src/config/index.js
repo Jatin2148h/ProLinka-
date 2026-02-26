@@ -4,24 +4,39 @@ import axios from "axios";
 // PRODUCTION AXIOS CONFIG - PRO-LINKA
 // ============================================
 
-// Your actual production URLs
-const PRODUCTION_API_URL = "https://prolinka-1.onrender.com";
-const LOCAL_DEV_URL = "http://localhost:9090";
+// Environment-based configuration
+// Priority: NEXT_PUBLIC_API_URL > auto-detect > fallback
+const getBaseUrl = () => {
+  // 1. Check for explicit environment variable (Vercel/Render)
+  if (process.env.NEXT_PUBLIC_API_URL) {
+    return process.env.NEXT_PUBLIC_API_URL;
+  }
+  
+  // 2. Auto-detect based on window location (client-side only)
+  if (typeof window !== "undefined") {
+    const hostname = window.location.hostname;
+    const isLocal = hostname === "localhost" || 
+                    hostname === "127.0.0.1" ||
+                    hostname.includes("localhost");
+    
+    if (isLocal) {
+      return "http://localhost:9090";
+    }
+  }
+  
+  // 3. Production fallback
+  return "https://prolinka-1.onrender.com";
+};
 
-// Check if we're in development
-const isLocalhost = typeof window !== "undefined" && 
-  (window.location.hostname === "localhost" || 
-   window.location.hostname === "127.0.0.1" ||
-   window.location.hostname.includes("localhost"));
+export const BASE_URL = getBaseUrl();
 
-// Use local for dev, production for live
-export const BASE_URL = isLocalhost ? LOCAL_DEV_URL : PRODUCTION_API_URL;
 
 // Debug log (only in browser console)
 if (typeof window !== "undefined") {
   console.log("🔍 API Config - BASE_URL:", BASE_URL);
-  console.log("🔍 API Config - Is Localhost:", isLocalhost);
+  console.log("🔍 API Config - Environment:", process.env.NEXT_PUBLIC_API_URL ? "Production (env)" : "Auto-detect");
 }
+
 
 // ============================================
 // AXIOS CLIENT - WITH CREDENTIALS
@@ -35,8 +50,8 @@ if (typeof window !== "undefined") {
 
 // User API client
 export const clientServer = axios.create({
-  baseURL: BASE_URL + "/api/users",
-  withCredentials: true,  // ✅ Required for authentication
+  baseURL: `${BASE_URL}/api/users`,
+  withCredentials: true,  // ✅ Required for cookies/auth
   timeout: 60000,         // 60s timeout (Render free tier is slow to wake)
   headers: {
     "Content-Type": "application/json",
@@ -46,8 +61,8 @@ export const clientServer = axios.create({
 
 // Post API client  
 export const postClientServer = axios.create({
-  baseURL: BASE_URL + "/api/posts",
-  withCredentials: true,  // ✅ Required for authentication
+  baseURL: `${BASE_URL}/api/posts`,
+  withCredentials: true,  // ✅ Required for cookies/auth
   timeout: 60000,         // 60s timeout
   headers: {
     "Content-Type": "application/json",
@@ -55,22 +70,32 @@ export const postClientServer = axios.create({
   }
 });
 
+
 // ============================================
 // RESPONSE INTERCEPTOR - DEBUGGING
 // ============================================
-clientServer.interceptors.response.use(
-  response => {
-    console.log("✅ API Success:", response.config.url, response.status);
-    return response;
-  },
-  error => {
-    if (error.code === "ECONNABORTED") {
-      console.error("⏱️ Timeout - Render may be sleeping. Wait 30-60s and retry.");
-    } else if (error.code === "ERR_NETWORK") {
-      console.error("🌐 Network Error - Check if backend is running.");
-    } else {
-      console.error("🔴 API Error:", error.message);
+const setupInterceptors = (client, name) => {
+  client.interceptors.response.use(
+    response => {
+      console.log(`✅ ${name} Success:`, response.config.url, response.status);
+      return response;
+    },
+    error => {
+      if (error.code === "ECONNABORTED") {
+        console.error(`⏱️ ${name} Timeout - Render may be sleeping. Wait 30-60s and retry.`);
+      } else if (error.code === "ERR_NETWORK") {
+        console.error(`🌐 ${name} Network Error - Check CORS/backend:`, error.message);
+        console.error(`   Request URL: ${error.config?.url}`);
+        console.error(`   Base URL: ${BASE_URL}`);
+      } else if (error.response?.status === 401) {
+        console.error(`🔒 ${name} Unauthorized - Token may be expired`);
+      } else {
+        console.error(`🔴 ${name} API Error:`, error.response?.data?.message || error.message);
+      }
+      return Promise.reject(error);
     }
-    return Promise.reject(error);
-  }
-);
+  );
+};
+
+setupInterceptors(clientServer, "UserAPI");
+setupInterceptors(postClientServer, "PostAPI");
