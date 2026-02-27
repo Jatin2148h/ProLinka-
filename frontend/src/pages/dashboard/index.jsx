@@ -12,9 +12,18 @@ const getImageUrl = (picturePath) => {
   if (!picturePath) return "/default.jpg";
   // If it's already a full URL (Cloudinary), use it directly
   if (picturePath.startsWith('http')) return picturePath;
+  // If it's already a default image path
+  if (picturePath === "default.jpg" || picturePath === "/default.jpg") return "/default.jpg";
   // If it's a local file, construct the URL
   return `${BASE_URL}/${picturePath}`;
 };
+
+// Helper to handle image errors
+const handleImageError = (e) => {
+  e.target.src = "/default.jpg";
+  e.target.onerror = null; // Prevent infinite loop
+};
+
 
 
 import {
@@ -202,7 +211,9 @@ function Dashboard() {
                   src={getImageUrl(authState.user?.profilePicture)}
                   className={styles.userProfile}
                   alt="User Profile"
+                  onError={handleImageError}
                 />
+
 
                 <div className={styles.inputWrapper}>
                   <textarea
@@ -259,7 +270,9 @@ function Dashboard() {
                           className={styles.userProfile}
                           src={getImageUrl(post.userId?.profilePicture)}
                           alt="user"
+                          onError={handleImageError}
                         />
+
 
                         <div className={styles.postInfo}>
                           <p className={styles.name}>
@@ -299,9 +312,14 @@ function Dashboard() {
                         <p>{post.body}</p>
                         {post.media && (
                           <div className={styles.singleCard_image}>
-                            <img src={post.media} alt="post" />
+                            <img 
+                              src={post.media.startsWith('http') ? post.media : `${BASE_URL}/${post.media}`} 
+                              alt="post" 
+                              onError={handleImageError}
+                            />
                           </div>
                         )}
+
 
                       </div>
 
@@ -472,7 +490,9 @@ function Dashboard() {
               {/* 2. Comments List: Har user ko dikhane ke liye Populate logic check */}
               <div className={styles.commentListWrapper}>
                 {postState.comments && postState.comments.length > 0 ? (
-                  postState.comments.map((comment) => {
+                  // Remove duplicate comments by _id
+                  [...new Map(postState.comments.map(c => [c._id, c])).values()].map((comment, index) => {
+
                     const userObj = comment.userId;
                     const isCommentOwner =
                       currentLoggedInId?.toString() ===
@@ -481,18 +501,17 @@ function Dashboard() {
                     return (
                     <div
                       className={styles.singleCommentItem}
-                      key={comment._id || `comment-${index}`}
+                      key={comment._id || `comment-${index}-${Math.random().toString(36).substr(2, 9)}`}
                     >
 
                         <div className={styles.commentUserHeader}>
                           <img
                             src={getImageUrl(userObj?.profilePicture)}
                             className={styles.commentUserImg}
-                            onError={(e) => {
-                              e.target.src = "/default.jpg";
-                            }}
+                            onError={handleImageError}
                             alt="user profile"
                           />
+
 
 
                           <div className={styles.commentUserMeta}>

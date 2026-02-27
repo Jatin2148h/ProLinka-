@@ -165,8 +165,10 @@ export const login = async (req, res) => {
         username: user.username,
         email: user.email,
         profilePicture: user.profilePicture,
+        coverPicture: user.coverPicture,
       },
     });
+
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }

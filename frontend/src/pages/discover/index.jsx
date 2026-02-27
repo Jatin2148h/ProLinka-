@@ -12,9 +12,18 @@ const getImageUrl = (picturePath) => {
   if (!picturePath) return "/default.jpg";
   // If it's already a full URL (Cloudinary), use it directly
   if (picturePath.startsWith('http')) return picturePath;
+  // If it's already a default image path
+  if (picturePath === "default.jpg" || picturePath === "/default.jpg") return "/default.jpg";
   // If it's a local file, construct the URL
-  return `${BASE_URL}/uploads/${picturePath}`;
+  return `${BASE_URL}/${picturePath}`;
 };
+
+// Helper to handle image errors
+const handleImageError = (e) => {
+  e.target.src = "/default.jpg";
+  e.target.onerror = null; // Prevent infinite loop
+};
+
 
 
 /**
@@ -105,7 +114,9 @@ function DiscoverPage() {
                                             src={getImageUrl(profile.userId?.profilePicture)}
                                             alt={profile.userId?.name || "User"}
                                             className={styles.avatar}
+                                            onError={handleImageError}
                                         />
+
                                     </div>
 
                                     <div className={styles.cardBody}>
