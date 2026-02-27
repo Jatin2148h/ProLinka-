@@ -13,9 +13,12 @@ const getImageUrl = (picturePath) => {
   if (!picturePath) return "/default.jpg";
   // If it's already a full URL (Cloudinary), use it directly
   if (picturePath.startsWith('http')) return picturePath;
+  // If it's already a default image path
+  if (picturePath === "default.jpg" || picturePath === "/default.jpg") return "/default.jpg";
   // If it's a local file, construct the URL
   return `${BASE_URL}/${picturePath}`;
 };
+
 
 function MyConnections() {
   const dispatch = useDispatch();
@@ -46,7 +49,9 @@ function MyConnections() {
   // Handle image error - fallback to default
   const handleImageError = (e) => {
     e.target.src = "/default.jpg";
+    e.target.onerror = null; // Prevent infinite loop
   };
+
 
   return (
     <UserLayout>

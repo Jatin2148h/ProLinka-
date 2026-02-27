@@ -180,12 +180,23 @@ function ViewProfilePage({ userProfile: serverUserProfile }) {
     );
   }
 
-  // Helper function to get image URL
+  // Helper function to get image URL - handles both Cloudinary and local
   const getImageUrl = (path) => {
     if (!path) return '/default.jpg';
+    // If it's already a full URL (Cloudinary), use it directly
     if (path.startsWith('http')) return path;
+    // If it's already a default image path
+    if (path === "default.jpg" || path === "/default.jpg") return '/default.jpg';
+    // If it's a local file, construct the URL
     return `${BASE_URL}/${path}`;
   };
+
+  // Helper to handle image errors
+  const handleImageError = (e) => {
+    e.target.src = "/default.jpg";
+    e.target.onerror = null; // Prevent infinite loop
+  };
+
 
   return (
     <UserLayout>
@@ -199,7 +210,9 @@ function ViewProfilePage({ userProfile: serverUserProfile }) {
                 className={styles.coverPhoto} 
                 src={getImageUrl(profileData.userId?.coverPicture)} 
                 alt="Cover Photo" 
+                onError={handleImageError}
               />
+
             </div>
 
             {/* Profile Info - Overlapping Cover */}
@@ -209,7 +222,9 @@ function ViewProfilePage({ userProfile: serverUserProfile }) {
                   className={styles.profileImg} 
                   src={getImageUrl(profileData.userId?.profilePicture)} 
                   alt="Profile Picture" 
+                  onError={handleImageError}
                 />
+
               </div>
 
               <div className={styles.userDetails}>
@@ -431,7 +446,9 @@ function ViewProfilePage({ userProfile: serverUserProfile }) {
                         src={getImageUrl(post.userId?.profilePicture)} 
                         alt={post.userId?.name} 
                         className={styles.postAvatar}
+                        onError={handleImageError}
                       />
+
                       <div className={styles.postMeta}>
                         <span className={styles.postAuthor}>{post.userId?.name}</span>
                         <span className={styles.postHandle}>@{post.userId?.username} • {new Date(post.createdAt).toLocaleDateString()}</span>
@@ -442,9 +459,15 @@ function ViewProfilePage({ userProfile: serverUserProfile }) {
                       <p className={styles.postText}>{post.body}</p>
                       {post.media && (
                         <div className={styles.postMediaBox}>
-                          <img src={post.media} alt="Post media" className={styles.postImg} />
+                          <img 
+                            src={post.media.startsWith('http') ? post.media : `${BASE_URL}/${post.media}`} 
+                            alt="Post media" 
+                            className={styles.postImg}
+                            onError={handleImageError}
+                          />
                         </div>
                       )}
+
                     </div>
 
                     <div className={styles.postFooter}>
