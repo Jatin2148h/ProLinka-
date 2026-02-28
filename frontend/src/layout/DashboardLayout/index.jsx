@@ -37,10 +37,16 @@ function DashboardLayout({ children }) {
       router.replace("/login");
     } else {
       dispatch(setTokenisThere());
-      dispatch(getAllUsers());
-      dispatch(getTopProfiles());
+      // Only fetch if not already loaded to prevent repeated loading
+      if (!authState.all_profile_fetch || authState.allUser.length === 0) {
+        dispatch(getAllUsers());
+      }
+      if (!authState.top_profiles || authState.top_profiles.length === 0) {
+        dispatch(getTopProfiles());
+      }
     }
-  }, [dispatch, router]);
+  }, [dispatch, router, authState.all_profile_fetch, authState.allUser.length, authState.top_profiles.length]);
+
 
 
   // Use top_profiles if available, otherwise fall back to allUser

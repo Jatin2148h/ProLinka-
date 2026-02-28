@@ -5,12 +5,13 @@ import {
   logoutUser,
   getAboutUser,
   getAllUsers,
+  getTopProfiles,
   sendConnectionRequest,
   getConnectionRequests,
   getMyConnectionRequests,
   acceptConnectionRequest,
-  // getTopProfiles  ❌ intentionally NOT used
 } from "../action/authAction";
+
 
 const initialState = {
   loading: false,
@@ -31,9 +32,11 @@ const initialState = {
 
   // 👇 SINGLE SOURCE OF TRUTH
   allUser: [],
+  top_profiles: [],
 
   all_profile_fetch: false,
 };
+
 
 const authSlice = createSlice({
   name: "auth",
@@ -179,6 +182,31 @@ const authSlice = createSlice({
         state.loading = false;
         state.allUser = [];
       })
+
+      /* ================= GET TOP PROFILES ================= */
+      .addCase(getTopProfiles.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(getTopProfiles.fulfilled, (state, action) => {
+        state.loading = false;
+        // Ensure data is array, filter valid profiles, and remove duplicates
+        const incomingData = Array.isArray(action.payload) ? action.payload : [];
+        const validProfiles = incomingData.filter(profile => profile && profile.userId);
+        
+        // Remove duplicates based on userId
+        const seen = new Set();
+        state.top_profiles = validProfiles.filter(profile => {
+          const userId = profile.userId?._id || profile.userId;
+          if (seen.has(userId)) return false;
+          seen.add(userId);
+          return true;
+        });
+      })
+      .addCase(getTopProfiles.rejected, (state) => {
+        state.loading = false;
+        state.top_profiles = [];
+      })
+
 
 
       /* ================= CONNECTION REQUESTS ================= */

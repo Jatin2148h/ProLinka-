@@ -503,11 +503,24 @@ export default ViewProfilePage;
 
 export async function getServerSideProps(context) {
   try {
+    const username = context.params.username;
+    console.log("Fetching profile for username:", username);
+    
     const request = await clientServer.get("/get_profile_base_on_username", {
-      params: { username: context.params.username }
+      params: { username: username }
     });
+    
+    console.log("Profile data received:", request.data);
+    
+    // Check if the response has valid data
+    if (!request.data || !request.data.userId) {
+      console.log("No user data found for username:", username);
+      return { props: { userProfile: null } };
+    }
+    
     return { props: { userProfile: request.data } };
   } catch (error) {
+    console.error("Error fetching profile:", error.response?.data || error.message);
     return { props: { userProfile: null } };
   }
 }
