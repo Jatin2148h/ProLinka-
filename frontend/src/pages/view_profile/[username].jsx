@@ -544,6 +544,12 @@ export async function getServerSideProps(context) {
     const username = context.params.username;
     console.log("Fetching profile for username:", username);
     
+    // Validate username parameter
+    if (!username || typeof username !== 'string') {
+      console.log("Invalid username parameter:", username);
+      return { props: { userProfile: null, error: "Invalid username" } };
+    }
+    
     const request = await clientServer.get("/get_profile_base_on_username", {
       params: { username: username }
     });
@@ -551,14 +557,32 @@ export async function getServerSideProps(context) {
     console.log("Profile data received:", request.data);
     
     // Check if the response has valid data
-    if (!request.data || !request.data.userId) {
-      console.log("No user data found for username:", username);
-      return { props: { userProfile: null } };
+    if (!request.data) {
+      console.log("No data received for username:", username);
+      return { props: { userProfile: null, error: "No data received" } };
+    }
+    
+    // Check if userId exists (the main fix for "User not found")
+    if (!request.data.userId) {
+      console.log("User exists but profile not found for username:", username);
+      // Try to find user by username directly
+      try {
+        const userRequest = await clientServer.get("/user/get_user_and_profile", {
+          params: { username: username }
+        });
+        if (userRequest.data && userRequest.data.userId) {
+          console.log("Found user via alternate endpoint:", userRequest.data);
+          return { props: { userProfile: userRequest.data } };
+        }
+      } catch (altError) {
+        console.log("Alternate endpoint also failed:", altError.message);
+      }
+      return { props: { userProfile: null, error: "User profile not found" } };
     }
     
     return { props: { userProfile: request.data } };
   } catch (error) {
     console.error("Error fetching profile:", error.response?.data || error.message);
-    return { props: { userProfile: null } };
+    return { props: { userProfile: null, error: error.response?.data?.message || "Failed to load profile" } };
   }
 }
