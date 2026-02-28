@@ -351,7 +351,7 @@ function ViewProfilePage({ userProfile: serverUserProfile }) {
                       } finally {
                         setConnectLoading(false);
                       }
-                    }}
+                     }}
                     disabled={connectLoading}
                     className={styles.connectBtn}
                   >
@@ -542,47 +542,36 @@ export default ViewProfilePage;
 export async function getServerSideProps(context) {
   try {
     const username = context.params.username;
-    console.log("Fetching profile for username:", username);
+    console.log("🔍 [view_profile] Fetching profile for username:", username);
+    console.log("🔍 [view_profile] BASE_URL:", process.env.NEXT_PUBLIC_API_URL || "https://prolinka-1.onrender.com");
     
     // Validate username parameter
     if (!username || typeof username !== 'string') {
-      console.log("Invalid username parameter:", username);
+      console.log("❌ [view_profile] Invalid username parameter:", username);
       return { props: { userProfile: null, error: "Invalid username" } };
     }
     
-    const request = await clientServer.get("/get_profile_base_on_username", {
-      params: { username: username }
-    });
+    // ✅ FIX: Use query string format instead of params object for SSR reliability
+    const request = await clientServer.get(`/get_profile_base_on_username?username=${encodeURIComponent(username)}`);
     
-    console.log("Profile data received:", request.data);
+    console.log("✅ [view_profile] Profile data received:", request.data ? "Found" : "Empty");
     
     // Check if the response has valid data
     if (!request.data) {
-      console.log("No data received for username:", username);
+      console.log("❌ [view_profile] No data received for username:", username);
       return { props: { userProfile: null, error: "No data received" } };
     }
     
     // Check if userId exists (the main fix for "User not found")
     if (!request.data.userId) {
-      console.log("User exists but profile not found for username:", username);
-      // Try to find user by username directly
-      try {
-        const userRequest = await clientServer.get("/user/get_user_and_profile", {
-          params: { username: username }
-        });
-        if (userRequest.data && userRequest.data.userId) {
-          console.log("Found user via alternate endpoint:", userRequest.data);
-          return { props: { userProfile: userRequest.data } };
-        }
-      } catch (altError) {
-        console.log("Alternate endpoint also failed:", altError.message);
-      }
+      console.log("❌ [view_profile] User exists but profile not found for username:", username);
       return { props: { userProfile: null, error: "User profile not found" } };
     }
     
+    console.log("✅ [view_profile] Successfully loaded profile for:", request.data.userId?.username);
     return { props: { userProfile: request.data } };
   } catch (error) {
-    console.error("Error fetching profile:", error.response?.data || error.message);
+    console.error("❌ [view_profile] Error fetching profile:", error.response?.data || error.message);
     return { props: { userProfile: null, error: error.response?.data?.message || "Failed to load profile" } };
   }
 }
