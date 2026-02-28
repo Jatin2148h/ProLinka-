@@ -21,14 +21,38 @@ const getImageUrl = (picturePath) => {
   return `${BASE_URL}/uploads/${picturePath}`;
 };
 
-
 // Helper to handle image errors
 const handleImageError = (e) => {
   e.target.src = "/default.jpg";
   e.target.onerror = null; // Prevent infinite loop
 };
 
+// Helper function to get username from profile
+const getUsernameFromProfile = (profile) => {
+  const userIdObj = profile.userId;
+  if (typeof userIdObj === 'object' && userIdObj !== null) {
+    return userIdObj.username;
+  }
+  return null;
+};
 
+// Helper function to get name from profile
+const getNameFromProfile = (profile) => {
+  const userIdObj = profile.userId;
+  if (typeof userIdObj === 'object' && userIdObj !== null) {
+    return userIdObj.name || "User";
+  }
+  return "ProLinka Member";
+};
+
+// Helper function to get profile picture from profile
+const getProfilePictureFromProfile = (profile) => {
+  const userIdObj = profile.userId;
+  if (typeof userIdObj === 'object' && userIdObj !== null) {
+    return userIdObj.profilePicture;
+  }
+  return "default.jpg";
+};
 
 /**
  * ======================================================
@@ -69,15 +93,21 @@ function DiscoverPage() {
         return data.filter((profile) => {
             if (!profile || !profile.userId) return false;
 
-            const isObject = typeof profile.userId === 'object';
-            const name = isObject ? (profile.userId.name || "User") : "ProLinka Member";
-
+            const name = getNameFromProfile(profile);
             const search = searchTerm.toLowerCase().trim();
             return name.toLowerCase().includes(search);
         });
     }, [allUser, searchTerm]);
 
-
+    // Handle card click - navigate to profile
+    const handleProfileClick = (profile) => {
+        const username = getUsernameFromProfile(profile);
+        if (username) {
+            router.push(`/view_profile/${username}`);
+        } else {
+            console.error("Cannot view profile: username not available", profile.userId);
+        }
+    };
 
     if (!mounted) return null;
 
@@ -110,25 +140,24 @@ function DiscoverPage() {
                                 <div
                                     key={profile._id}
                                     className={styles.profileCard}
-                                    onClick={() => router.push(`/view_profile/${profile.userId?.username || profile.userId}`)}
+                                    onClick={() => handleProfileClick(profile)}
                                 >
                                     <div className={styles.cardHeader}>
                                         <div className={styles.banner}></div>
                                         <img
-                                            src={getImageUrl(profile.userId?.profilePicture)}
-                                            alt={profile.userId?.name || "User"}
+                                            src={getImageUrl(getProfilePictureFromProfile(profile))}
+                                            alt={getNameFromProfile(profile)}
                                             className={styles.avatar}
                                             onError={handleImageError}
                                         />
-
                                     </div>
 
                                     <div className={styles.cardBody}>
                                         <h3 className={styles.userName}>
-                                            {typeof profile.userId === 'object' ? (profile.userId.name || "User") : "ProLinka Member"}
+                                            {getNameFromProfile(profile)}
                                         </h3>
                                         <p className={styles.userHandle}>
-                                            @{typeof profile.userId === 'object' ? (profile.userId.username || "username") : "username"}
+                                            @{getUsernameFromProfile(profile) || "username"}
                                         </p>
                                         <p className={styles.userBio}>
                                             {profile.bio || "Professional Developer at ProLinka"}
@@ -139,7 +168,7 @@ function DiscoverPage() {
                                                 className={styles.viewProfileBtn}
                                                 onClick={(e) => {
                                                     e.stopPropagation();
-                                                    router.push(`/view_profile/${profile.userId?.username || profile.userId}`);
+                                                    handleProfileClick(profile);
                                                 }}
                                             >
                                                 View Profile

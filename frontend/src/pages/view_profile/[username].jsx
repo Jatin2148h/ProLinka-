@@ -173,12 +173,32 @@ function ViewProfilePage({ userProfile: serverUserProfile }) {
       <UserLayout>
         <DashboardLayout>
           <div className={styles.container}>
-            <h2>User not found</h2>
+            <div style={{ textAlign: 'center', padding: '50px' }}>
+              <h2>User not found</h2>
+              <p style={{ color: '#666', marginTop: '10px' }}>
+                The user you're looking for doesn't exist or has been removed.
+              </p>
+              <button 
+                onClick={() => router.push('/discover')}
+                style={{
+                  marginTop: '20px',
+                  padding: '10px 20px',
+                  background: '#0077B5',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '20px',
+                  cursor: 'pointer'
+                }}
+              >
+                Go to Discover
+              </button>
+            </div>
           </div>
         </DashboardLayout>
       </UserLayout>
     );
   }
+
 
   // Helper function to get image URL - handles both Cloudinary and local
   const getImageUrl = (path) => {
