@@ -15,9 +15,13 @@ const getImageUrl = (picturePath) => {
   if (picturePath.startsWith('http')) return picturePath;
   // If it's already a default image path
   if (picturePath === "default.jpg" || picturePath === "/default.jpg") return "/default.jpg";
-  // If it's a local file, construct the URL
-  return `${BASE_URL}/${picturePath}`;
+  // If it's a local file in uploads folder, construct the URL
+  if (picturePath.includes('uploads/')) {
+    return `${BASE_URL}/${picturePath}`;
+  }
+  return `${BASE_URL}/uploads/${picturePath}`;
 };
+
 
 
 function MyConnections() {

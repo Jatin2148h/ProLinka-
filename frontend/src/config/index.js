@@ -8,6 +8,7 @@ import axios from "axios";
 // Priority: NEXT_PUBLIC_API_URL > auto-detect > fallback
 const getBaseUrl = () => {
   // 1. Check for explicit environment variable (Vercel/Render)
+  // This is the PRIMARY method for production
   if (process.env.NEXT_PUBLIC_API_URL) {
     return process.env.NEXT_PUBLIC_API_URL;
   }
@@ -20,22 +21,32 @@ const getBaseUrl = () => {
                     hostname.includes("localhost");
     
     if (isLocal) {
+      // Local development - use local backend
       return "http://localhost:9090";
     }
   }
   
-  // 3. Production fallback
+  // 3. Production fallback - NO localhost references
+  // Only use this if env var is not set (should be set in production!)
   return "https://prolinka-1.onrender.com";
 };
 
 export const BASE_URL = getBaseUrl();
 
+// Static exports URL helper - works for both SSR and CSR
+export const getUploadUrl = (path) => {
+  if (!path) return "/default.jpg";
+  if (path.startsWith('http')) return path;
+  if (path === "default.jpg" || path === "/default.jpg") return "/default.jpg";
+  return `${BASE_URL}/uploads/${path}`;
+};
 
 // Debug log (only in browser console)
 if (typeof window !== "undefined") {
   console.log("🔍 API Config - BASE_URL:", BASE_URL);
   console.log("🔍 API Config - Environment:", process.env.NEXT_PUBLIC_API_URL ? "Production (env)" : "Auto-detect");
 }
+
 
 
 // ============================================

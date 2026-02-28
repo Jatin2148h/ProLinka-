@@ -47,15 +47,17 @@ app.use(
   cors({
     origin: function (origin, callback) {
       // ✅ EXACT DOMAINS - Your actual Vercel URLs
+      // Dynamic allow list - includes production and local dev
       const allowedOrigins = [
-        "http://localhost:3000",
-        "http://localhost:3001", 
-        "http://localhost:5173", // Vite dev
+        "http://localhost:3000",   // Next.js local
+        "http://localhost:3001",    // Alt local
+        "http://localhost:5173",   // Vite dev
         "https://pro-linka.vercel.app",           // ✅ Production domain
         "https://pro-linka-git-*.vercel.app",      // Vercel branch previews
         "https://pro-linka-*.vercel.app",        // All Vercel deployments
-        "https://*.vercel.app"                     // Any Vercel subdomain (fallback)
+        "https://*.vercel.app"                     // Any Vercel subdomain
       ];
+
       
       // Allow no-origin requests (Postman, curl, mobile apps, server-side)
       if (!origin) {
