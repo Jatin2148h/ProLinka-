@@ -352,6 +352,30 @@ export default function Profile() {
               coverPicture: urlWithCache
             }
           }));
+          
+          // INSTANT UPDATE: Update localStorage and Redux immediately
+          const savedUser = localStorage.getItem("user");
+          let userId = null;
+          if (savedUser) {
+            const userData = JSON.parse(savedUser);
+            userData.coverPicture = urlWithCache;
+            localStorage.setItem("user", JSON.stringify(userData));
+            // Update Redux state instantly
+            dispatch(setUser(userData));
+            userId = userData._id || userData.id;
+          }
+          
+          // INSTANT SYNC: Update this user in allUser array (for Discover, Connections, etc.)
+          if (userId) {
+            dispatch(updateUserInAllUser({ 
+              userId: userId, 
+              coverPicture: urlWithCache 
+            }));
+          }
+          
+          // Refresh from server to ensure consistency
+          dispatch(getAllUsers());
+          dispatch(getTopProfiles());
         }
         // Refresh from server after a short delay
         setTimeout(() => {
