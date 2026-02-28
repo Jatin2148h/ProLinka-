@@ -165,8 +165,10 @@ export const login = async (req, res) => {
         username: user.username,
         email: user.email,
         profilePicture: user.profilePicture,
+        coverPicture: user.coverPicture,
       },
     });
+
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
@@ -254,7 +256,7 @@ export const getUserAndProfile = async (req, res) => {
 
     let userProfile = await Profile.findOne({ userId: user._id }).populate(
       "userId",
-      "name username email profilePicture"
+      "name username email profilePicture coverPicture headline location"
     );
 
     // If profile doesn't exist, create one
@@ -270,7 +272,7 @@ export const getUserAndProfile = async (req, res) => {
       // Populate again after saving
       userProfile = await Profile.findOne({ userId: user._id }).populate(
         "userId",
-        "name username email profilePicture"
+        "name username email profilePicture coverPicture headline location"
       );
     }
 
@@ -583,7 +585,7 @@ export const getUserProfileAndUserBashedOnUsername = async (req, res) => {
 
     let userProfile = await Profile.findOne({ userId: user._id }).populate(
       "userId",
-      "name username email profilePicture"
+      "name username email profilePicture coverPicture headline location"
     );
     
     // If profile doesn't exist, create one (for existing users before fix)
@@ -599,7 +601,7 @@ export const getUserProfileAndUserBashedOnUsername = async (req, res) => {
       // Populate again after saving
       userProfile = await Profile.findOne({ userId: user._id }).populate(
         "userId",
-        "name username email profilePicture"
+        "name username email profilePicture coverPicture headline location"
       );
     }
     

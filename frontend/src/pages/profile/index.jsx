@@ -29,8 +29,26 @@ const defaultProfile = {
 };
 
 // Default images
-const DEFAULT_AVATAR = `${BASE_URL}/default.jpg`;
-const DEFAULT_COVER = `${BASE_URL}/default.jpg`;
+const DEFAULT_AVATAR = "/default.jpg";
+const DEFAULT_COVER = "/default.jpg";
+
+// Helper to get image URL - handles both Cloudinary and local
+const getImageUrl = (picturePath) => {
+  if (!picturePath) return "/default.jpg";
+  // If it's already a full URL (Cloudinary), use it directly
+  if (picturePath.startsWith('http')) return picturePath;
+  // If it's already a default image path
+  if (picturePath === "default.jpg" || picturePath === "/default.jpg") return "/default.jpg";
+  // If it's a local file, construct the URL
+  return `${BASE_URL}/${picturePath}`;
+};
+
+// Helper to handle image errors
+const handleImageError = (e) => {
+  e.target.src = "/default.jpg";
+  e.target.onerror = null; // Prevent infinite loop
+};
+
 
 export default function Profile() {
   const authState= useSelector((state)=>state.auth);
@@ -334,6 +352,30 @@ export default function Profile() {
               coverPicture: urlWithCache
             }
           }));
+          
+          // INSTANT UPDATE: Update localStorage and Redux immediately
+          const savedUser = localStorage.getItem("user");
+          let userId = null;
+          if (savedUser) {
+            const userData = JSON.parse(savedUser);
+            userData.coverPicture = urlWithCache;
+            localStorage.setItem("user", JSON.stringify(userData));
+            // Update Redux state instantly
+            dispatch(setUser(userData));
+            userId = userData._id || userData.id;
+          }
+          
+          // INSTANT SYNC: Update this user in allUser array (for Discover, Connections, etc.)
+          if (userId) {
+            dispatch(updateUserInAllUser({ 
+              userId: userId, 
+              coverPicture: urlWithCache 
+            }));
+          }
+          
+          // Refresh from server to ensure consistency
+          dispatch(getAllUsers());
+          dispatch(getTopProfiles());
         }
         // Refresh from server after a short delay
         setTimeout(() => {
@@ -421,9 +463,11 @@ export default function Profile() {
               <div className={styles.coverWrapper} onClick={handleCoverClick}>
                 <img 
                   className={styles.coverPhoto} 
-                  src={userProfile.user.coverPicture || DEFAULT_COVER} 
+                  src={getImageUrl(userProfile.user.coverPicture)} 
                   alt="Cover" 
+                  onError={handleImageError}
                 />
+
                 <div className={styles.coverEdit}>
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" style={{width: '16px', height: '16px'}}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 0 1 1.13-1.897L16.863 4.487Zm0 0L19.5 7.125" />
@@ -446,9 +490,11 @@ export default function Profile() {
                 <div className={styles.avatarBox} onClick={handleAvatarClick}>
                   <img 
                     className={styles.profileImg} 
-                    src={userProfile.user.profilePicture || DEFAULT_AVATAR} 
+                    src={getImageUrl(userProfile.user.profilePicture)} 
                     alt="Profile" 
+                    onError={handleImageError}
                   />
+
                   <div className={styles.avatarEdit}>
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" style={{width: '18px', height: '18px'}}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 0 1 1.13-1.897L16.863 4.487Zm0 0L19.5 7.125" />
@@ -598,9 +644,11 @@ export default function Profile() {
                       <div className={styles.postHeader}>
                         <img 
                           className={styles.postAvatar} 
-                          src={userProfile.user.profilePicture || DEFAULT_AVATAR} 
+                          src={getImageUrl(userProfile.user.profilePicture)} 
                           alt="Profile" 
+                          onError={handleImageError}
                         />
+
                         <div className={styles.postMeta}>
                           <p className={styles.postAuthor}>{userProfile.user.name}</p>
                           <p className={styles.postHandle}>@{userProfile.user.username} • {new Date(post.createdAt).toLocaleDateString()}</p>
@@ -642,9 +690,15 @@ export default function Profile() {
                         <p className={styles.postText}>{post.body}</p>
                         {post.media && post.media !== "" && (
                           <div className={styles.postMediaBox}>
-                            <img src={post.media} alt="Post" className={styles.postImg} />
+                            <img 
+                              src={post.media.startsWith('http') ? post.media : `${BASE_URL}/${post.media}`} 
+                              alt="Post" 
+                              className={styles.postImg}
+                              onError={handleImageError}
+                            />
                           </div>
                         )}
+
                       </div>
 
                       <div className={styles.postFooter}>

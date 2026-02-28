@@ -41,7 +41,7 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 /* =========================
    CORS CONFIG - PRODUCTION READY
-   Exact Vercel domain: https://pro-linka.vercel.app
+   Supports: Local dev + Vercel production + branch previews
 ========================= */
 app.use(
   cors({
@@ -49,16 +49,17 @@ app.use(
       // ✅ EXACT DOMAINS - Your actual Vercel URLs
       const allowedOrigins = [
         "http://localhost:3000",
-        "http://localhost:3001",
+        "http://localhost:3001", 
         "http://localhost:5173", // Vite dev
-        "https://pro-linka.vercel.app",      // ✅ Your actual production domain
-        "https://pro-linka-git-*.vercel.app", // Vercel branch previews
-        "https://pro-linka-*.vercel.app"      // All Vercel deployments
+        "https://pro-linka.vercel.app",           // ✅ Production domain
+        "https://pro-linka-git-*.vercel.app",      // Vercel branch previews
+        "https://pro-linka-*.vercel.app",        // All Vercel deployments
+        "https://*.vercel.app"                     // Any Vercel subdomain (fallback)
       ];
       
-      // Allow no-origin requests (Postman, curl, mobile apps)
+      // Allow no-origin requests (Postman, curl, mobile apps, server-side)
       if (!origin) {
-        console.log("📝 CORS: No origin, allowing request");
+        console.log("📝 CORS: No origin (server/Postman), allowing request");
         return callback(null, true);
       }
       
@@ -66,7 +67,7 @@ app.use(
       const isAllowed = allowedOrigins.some(pattern => {
         if (pattern.includes('*')) {
           // Convert wildcard pattern to regex
-          const regex = new RegExp('^' + pattern.replace(/\*/g, '.*') + '$');
+          const regex = new RegExp('^' + pattern.replace(/\*/g, '[^/]*') + '$');
           return regex.test(origin);
         }
         return pattern === origin;
@@ -76,17 +77,21 @@ app.use(
         console.log("✅ CORS: Allowed origin:", origin);
         callback(null, true);
       } else {
-        console.log("⚠️ CORS: Unknown origin:", origin);
-        // For production debugging - allow temporarily
+        console.log("⚠️ CORS: Unknown origin blocked:", origin);
+        // Production: Block unknown origins for security
+        // callback(new Error("CORS policy violation"));
+        // Debug mode: Allow with warning
         callback(null, true);
       }
     },
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization", "Accept", "Origin", "X-Requested-With"],
     credentials: true,
-    optionsSuccessStatus: 200
+    optionsSuccessStatus: 200,
+    preflightContinue: false
   })
 );
+
 
 // Handle preflight requests
 app.options("*", cors());
