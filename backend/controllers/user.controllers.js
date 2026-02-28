@@ -579,7 +579,13 @@ export const getTopProfiles = async (req, res) => {
 export const getUserProfileAndUserBashedOnUsername = async (req, res) => {
   // Support both query param (/get_profile_base_on_username?username=xyz) 
   // and route param (/api/users/:username)
-  const username = req.query.username || req.params.username;
+  let username = req.query.username || req.params.username;
+  
+  // ✅ CRITICAL FIX: Trim whitespace from username
+  // Database has usernames with trailing spaces like "harish2148h " instead of "harish2148h"
+  if (typeof username === 'string') {
+    username = username.trim();
+  }
   
   if (!username) {
     return res.status(400).json({ message: "Username is required" });
@@ -588,9 +594,20 @@ export const getUserProfileAndUserBashedOnUsername = async (req, res) => {
   try {
     // ✅ FIX: Use case-insensitive regex search for username
     // This handles cases where username in URL doesn't match exact case in DB
+    // Also handles trailing spaces in database usernames
     const user = await User.findOne({ 
       username: { $regex: new RegExp(`^${username}$`, 'i') } 
     });
+    
+    // If no match found with exact match, try with trimmed database values
+    if (!user) {
+      const allUsers = await User.find({});
+      const trimmedUser = allUsers.find(u => u.username.trim().toLowerCase() === username.toLowerCase());
+      if (trimmedUser) {
+        user = trimmedUser;
+      }
+    }
+
     
     if (!user) {
       return res.status(404).json({ message: "User not found" });
