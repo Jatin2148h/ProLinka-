@@ -78,9 +78,7 @@ app.use(
         callback(null, true);
       } else {
         console.log("⚠️ CORS: Unknown origin blocked:", origin);
-        // Production: Block unknown origins for security
-        // callback(new Error("CORS policy violation"));
-        // Debug mode: Allow with warning
+      
         callback(null, true);
       }
     },
