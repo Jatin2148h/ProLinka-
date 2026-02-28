@@ -80,4 +80,8 @@ router.get("/user_connection_request", whatAreMyConnection);
 router.post("/accept_connection_request", acceptConnectionRequest);
 router.get("/get_profile_base_on_username", getUserProfileAndUserBashedOnUsername);
 
+// ✅ NEW: Direct username route - matches the expected API call pattern
+// This endpoint is called as: GET /api/users/:username
+router.get("/:username", getUserProfileAndUserBashedOnUsername);
+
 export default router;

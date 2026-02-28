@@ -542,36 +542,28 @@ export default ViewProfilePage;
 export async function getServerSideProps(context) {
   try {
     const username = context.params.username;
-    console.log("🔍 [view_profile] Fetching profile for username:", username);
-    console.log("🔍 [view_profile] BASE_URL:", process.env.NEXT_PUBLIC_API_URL || "https://prolinka-1.onrender.com");
     
     // Validate username parameter
     if (!username || typeof username !== 'string') {
-      console.log("❌ [view_profile] Invalid username parameter:", username);
       return { props: { userProfile: null, error: "Invalid username" } };
     }
     
-    // ✅ FIX: Use query string format instead of params object for SSR reliability
-    const request = await clientServer.get(`/get_profile_base_on_username?username=${encodeURIComponent(username)}`);
-    
-    console.log("✅ [view_profile] Profile data received:", request.data ? "Found" : "Empty");
+    // ✅ FIX: Use direct /api/users/:username endpoint as expected
+    // This matches the expected API call pattern: axios.get(`${API_URL}/api/users/${username}`)
+    const request = await clientServer.get(`/${encodeURIComponent(username)}`);
     
     // Check if the response has valid data
     if (!request.data) {
-      console.log("❌ [view_profile] No data received for username:", username);
       return { props: { userProfile: null, error: "No data received" } };
     }
     
-    // Check if userId exists (the main fix for "User not found")
+    // Check if userId exists
     if (!request.data.userId) {
-      console.log("❌ [view_profile] User exists but profile not found for username:", username);
       return { props: { userProfile: null, error: "User profile not found" } };
     }
     
-    console.log("✅ [view_profile] Successfully loaded profile for:", request.data.userId?.username);
     return { props: { userProfile: request.data } };
   } catch (error) {
-    console.error("❌ [view_profile] Error fetching profile:", error.response?.data || error.message);
     return { props: { userProfile: null, error: error.response?.data?.message || "Failed to load profile" } };
   }
 }

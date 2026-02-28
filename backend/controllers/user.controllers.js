@@ -577,7 +577,9 @@ export const getTopProfiles = async (req, res) => {
 };
 
 export const getUserProfileAndUserBashedOnUsername = async (req, res) => {
-  const { username } = req.query;
+  // Support both query param (/get_profile_base_on_username?username=xyz) 
+  // and route param (/api/users/:username)
+  const username = req.query.username || req.params.username;
   
   if (!username) {
     return res.status(400).json({ message: "Username is required" });
