@@ -9,7 +9,7 @@ import { getAllPosts } from '@/config/redux/action/postAction';
 import { acceptConnectionRequest, getConnectionRequests, getMyConnectionRequests, sendConnectionRequest, getAboutUser } from '@/config/redux/action/authAction';
 import { toast } from 'react-hot-toast';
 
-function ViewProfilePage({ userProfile: serverUserProfile }) {
+function ViewProfilePage({ userProfile: serverUserProfile, error }) {
   const router = useRouter();
   const dispatch = useDispatch();
 
@@ -21,6 +21,7 @@ function ViewProfilePage({ userProfile: serverUserProfile }) {
   const [connectLoading, setConnectLoading] = useState(false);
   const [receivedRequest, setReceivedRequest] = useState(null);
   const [actionLoading, setActionLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   
   // Local state for profile data (to allow updates)
   const [profileData, setProfileData] = useState(serverUserProfile);
@@ -30,10 +31,21 @@ function ViewProfilePage({ userProfile: serverUserProfile }) {
     (authState.user._id === profileData.userId?._id || 
      authState.user.id === profileData.userId?._id);
 
-  // Sync server props to local state
+  // Sync server props to local state and handle loading
   useEffect(() => {
-    setProfileData(serverUserProfile);
+    if (serverUserProfile) {
+      setProfileData(serverUserProfile);
+    }
+    setIsLoading(false);
   }, [serverUserProfile]);
+
+  // Handle case when there's an error from SSR
+  useEffect(() => {
+    if (error && !serverUserProfile) {
+      setIsLoading(false);
+    }
+  }, [error, serverUserProfile]);
+
 
   // Force refresh profile data when auth state changes (to get updated images)
   useEffect(() => {
@@ -168,6 +180,25 @@ function ViewProfilePage({ userProfile: serverUserProfile }) {
     }
   }, [profileData, dispatch]);
 
+  // Loading state while SSR data loads
+  if (isLoading) {
+    return (
+      <UserLayout>
+        <DashboardLayout>
+          <div className={styles.container}>
+            <div style={{ textAlign: 'center', padding: '50px' }}>
+              <div className={styles.syncing}>
+                <div className={styles.dotPulse}></div>
+                <p>Loading profile...</p>
+              </div>
+            </div>
+          </div>
+        </DashboardLayout>
+      </UserLayout>
+    );
+  }
+
+  // Error state - user not found
   if (!profileData) {
     return (
       <UserLayout>
@@ -176,7 +207,7 @@ function ViewProfilePage({ userProfile: serverUserProfile }) {
             <div style={{ textAlign: 'center', padding: '50px' }}>
               <h2>User not found</h2>
               <p style={{ color: '#666', marginTop: '10px' }}>
-                The user you're looking for doesn't exist or has been removed.
+                {error || "The user you're looking for doesn't exist or has been removed."}
               </p>
               <button 
                 onClick={() => router.push('/discover')}
@@ -198,6 +229,7 @@ function ViewProfilePage({ userProfile: serverUserProfile }) {
       </UserLayout>
     );
   }
+
 
 
   // Helper function to get image URL - handles both Cloudinary and local
@@ -540,6 +572,8 @@ function ViewProfilePage({ userProfile: serverUserProfile }) {
 export default ViewProfilePage;
 
 export async function getServerSideProps(context) {
+  const { res } = context;
+  
   try {
     const username = context.params.username;
     
@@ -550,7 +584,9 @@ export async function getServerSideProps(context) {
     
     // ✅ FIX: Use direct /api/users/:username endpoint as expected
     // This matches the expected API call pattern: axios.get(`${API_URL}/api/users/${username}`)
-    const request = await clientServer.get(`/${encodeURIComponent(username)}`);
+    const request = await clientServer.get(`/${encodeURIComponent(username)}`, {
+      timeout: 10000 // 10 second timeout
+    });
     
     // Check if the response has valid data
     if (!request.data) {
@@ -562,8 +598,22 @@ export async function getServerSideProps(context) {
       return { props: { userProfile: null, error: "User profile not found" } };
     }
     
-    return { props: { userProfile: request.data } };
+    return { props: { userProfile: request.data, error: null } };
   } catch (error) {
-    return { props: { userProfile: null, error: error.response?.data?.message || "Failed to load profile" } };
+    // Set cache control headers to prevent stale data
+    if (res) {
+      res.setHeader('Cache-Control', 'no-store, max-age=0');
+    }
+    
+    const errorMessage = error.response?.data?.message || 
+                         error.message || 
+                         "Failed to load profile";
+    
+    return { 
+      props: { 
+        userProfile: null, 
+        error: errorMessage 
+      } 
+    };
   }
 }
