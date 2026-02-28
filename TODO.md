@@ -1,6 +1,26 @@
 # ✅ TODO - Fix ProLinka Issues - COMPLETED
 
-## ✅ LATEST FIX: Loading State & Error Handling
+## ✅ LATEST FIX: Trailing Whitespace in Usernames
+
+### Problem:
+- Database usernames have trailing spaces: "harish2148h " instead of "harish2148h"
+- Frontend calls `/api/users/harish2148h` but DB has "harish2148h "
+- Result: "User not found" even though user exists
+
+### Solution:
+- Backend now trims username input from URL
+- Backend also searches with trimmed values from database
+- Added fallback search for usernames with trailing spaces
+
+### Changes:
+- `backend/controllers/user.controllers.js`
+  - Added username.trim() to handle input whitespace
+  - Added fallback search for database usernames with trailing spaces
+
+---
+
+## ✅ Previous FIX: Loading State & Error Handling
+
 
 ### Problem:
 - "Loading initial props cancelled" error on profile page
