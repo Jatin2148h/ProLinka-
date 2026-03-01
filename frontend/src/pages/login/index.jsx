@@ -16,7 +16,17 @@ function LoginPage() {
   const dispatch = useDispatch();
   const router = useRouter();
 
-  const [isLogin, setIsLogin] = useState(true);
+  // Check URL for mode parameter - ?mode=signup opens signup directly
+  const getInitialMode = () => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      return params.get('mode') === 'signup' ? false : true;
+    }
+    return true;
+  };
+  
+  const [isLogin, setIsLogin] = useState(getInitialMode);
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");

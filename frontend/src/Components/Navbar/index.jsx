@@ -109,10 +109,12 @@ function NavbarComponent() {
               <Link href="/login" className={styles.loginBtn}>Login</Link>
               <button
                 className={styles.registerBtn}
-                onClick={() => router.push("/register")}
+                onClick={() => router.push("/login?mode=signup")}
               >
                 Register
               </button>
+
+
             </div>
           )}
 
