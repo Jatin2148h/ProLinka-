@@ -54,11 +54,12 @@ router.get("/user/get_all_users_profile", getAllUsersPrfoile);
 router.get("/get_user_and_profile", getUserAndProfile);
 router.get("/get_all_users_profile", getAllUsersPrfoile);
 
-// Download resume
-router.get("/user/download_resume", downloadProfile);
-
+// Download resume - MUST come BEFORE /:username route
 // ✅ ADD: frontend-friendly alias (404 bug fix)
 router.get("/download_resume", downloadProfile);
+
+// Original route (kept for backward compatibility)
+router.get("/user/download_resume", downloadProfile);
 
 
 // Connections
@@ -78,9 +79,10 @@ router.get("/get_profile_base_on_username", getUserProfileAndUserBashedOnUsernam
 
 // ✅ NEW: Direct username route - matches the expected API call pattern
 // This endpoint is called as: GET /api/users/:username
+// MUST be after all other GET routes to avoid conflicts
 router.get("/:username", getUserProfileAndUserBashedOnUsername);
 
-// ✅ ADD: health / active check (debug safe) - MUST be after parameterized routes
+// ✅ ADD: health / active check (debug safe) - MUST be after ALL routes
 router.get("/", (req, res) => {
   return res.status(200).json({ message: "USER ROUTES RUNNING" });
 });
