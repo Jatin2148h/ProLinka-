@@ -6,9 +6,11 @@ import Connection from "../models/connections.model.js";
 
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
-import PDFDocument from "pdfkit";
+import path from "path";
 import fs from "fs";
+import PDFDocument from "pdfkit";
 import axios from "axios";
+
 
 
 /* ======================================================
@@ -382,6 +384,7 @@ export const getAllUsersPrfoile = async (req, res) => {
 export const downloadProfile = async (req, res) => {
   try {
     const user_id = req.query.id;
+    console.log("📥 Download request for user_id:", user_id);
     
     if (!user_id) {
       return res.status(400).json({ message: "User ID is required" });
@@ -393,28 +396,47 @@ export const downloadProfile = async (req, res) => {
     );
     
     if (!userProfile) {
+      console.log("❌ Profile not found");
       return res.status(404).json({ message: "Profile not found" });
     }
     
+    console.log("✅ Generating PDF for:", userProfile.userId?.username);
+    
+    // Generate PDF
     const outputPath = await convertUserDataToPDF(userProfile);
     
-    // Serve the PDF file for download
-    const fullPath = path.join(__dirname, '..', 'uploads', outputPath);
-    res.download(fullPath, `${userProfile.userId.username}_resume.pdf`, (err) => {
-      if (err) {
-        console.error("Download error:", err);
-        // Clean up the file after download or if error
-        fs.unlink(fullPath, () => {});
-      } else {
-        // Clean up the file after successful download
-        fs.unlink(fullPath, () => {});
-      }
+    // Simple file path - use process.cwd() for reliability
+    const fullPath = path.join(process.cwd(), 'uploads', outputPath);
+    console.log("📄 PDF path:", fullPath);
+    
+    // Check if file exists
+    if (!fs.existsSync(fullPath)) {
+      console.log("❌ PDF file not found");
+      return res.status(500).json({ message: "PDF generation failed" });
+    }
+    
+    // Set headers for download
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `attachment; filename="${userProfile.userId.username}_resume.pdf"`);
+    
+    // Send file
+    const fileStream = fs.createReadStream(fullPath);
+    fileStream.pipe(res);
+    
+    // Cleanup after send
+    fileStream.on('close', () => {
+      try {
+        fs.unlinkSync(fullPath);
+        console.log("🗑️ PDF cleaned up");
+      } catch (e) {}
     });
+    
   } catch (error) {
-    console.error("Download profile error:", error);
-    return res.status(500).json({ message: "Failed to generate resume" });
+    console.error("❌ Download profile error:", error);
+    return res.status(500).json({ message: "Failed to generate resume: " + error.message });
   }
 };
+
 
 
 /* ================= CONNECTION REQUEST ================= */
