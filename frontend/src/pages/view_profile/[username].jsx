@@ -395,16 +395,8 @@ function ViewProfilePage({ userProfile: serverUserProfile, error }) {
                 <button 
                   onClick={async() => {
                     try {
-                      const response = await clientServer.get(`/download_resume?id=${profileData.userId._id}`);
-                      if (response.data?.message) {
-                        // PDF is in uploads folder
-                        const pdfUrl = response.data.message.includes('uploads/') 
-                          ? `${BASE_URL}/${response.data.message}`
-                          : `${BASE_URL}/uploads/${response.data.message}`;
-                        window.open(pdfUrl, "_blank");
-                      } else {
-                        toast.error('Resume not available');
-                      }
+                      // Open directly in new tab - backend serves the file
+                      window.open(`${BASE_URL}/api/users/download_resume?id=${profileData.userId._id}`, "_blank");
                     } catch (error) {
                       console.error("Download resume error:", error);
                       toast.error('Failed to download resume');
@@ -412,6 +404,7 @@ function ViewProfilePage({ userProfile: serverUserProfile, error }) {
                   }} 
                   className={styles.downloadBtn}
                 >
+
 
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" style={{width: '20px', height: '20px'}}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />

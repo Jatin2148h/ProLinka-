@@ -380,14 +380,42 @@ export const getAllUsersPrfoile = async (req, res) => {
 
 /* ================= DOWNLOAD PROFILE ================= */
 export const downloadProfile = async (req, res) => {
-  const user_id = req.query.id;
-  const userProfile = await Profile.findOne({ userId: user_id }).populate(
-    "userId",
-    "name username email profilePicture"
-  );
-  const outputPath = await convertUserDataToPDF(userProfile);
-  return res.status(200).json({ message: outputPath });
+  try {
+    const user_id = req.query.id;
+    
+    if (!user_id) {
+      return res.status(400).json({ message: "User ID is required" });
+    }
+    
+    const userProfile = await Profile.findOne({ userId: user_id }).populate(
+      "userId",
+      "name username email profilePicture"
+    );
+    
+    if (!userProfile) {
+      return res.status(404).json({ message: "Profile not found" });
+    }
+    
+    const outputPath = await convertUserDataToPDF(userProfile);
+    
+    // Serve the PDF file for download
+    const fullPath = path.join(__dirname, '..', 'uploads', outputPath);
+    res.download(fullPath, `${userProfile.userId.username}_resume.pdf`, (err) => {
+      if (err) {
+        console.error("Download error:", err);
+        // Clean up the file after download or if error
+        fs.unlink(fullPath, () => {});
+      } else {
+        // Clean up the file after successful download
+        fs.unlink(fullPath, () => {});
+      }
+    });
+  } catch (error) {
+    console.error("Download profile error:", error);
+    return res.status(500).json({ message: "Failed to generate resume" });
+  }
 };
+
 
 /* ================= CONNECTION REQUEST ================= */
 export const sendConnectionRequest = async (req, res) => {
