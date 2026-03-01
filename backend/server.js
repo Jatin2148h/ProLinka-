@@ -46,17 +46,20 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use(
   cors({
     origin: function (origin, callback) {
-      // ✅ EXACT DOMAINS - Your actual Vercel URLs
+      // ✅ EXACT DOMAINS - Your actual deployment URLs
       // Dynamic allow list - includes production and local dev
       const allowedOrigins = [
         "http://localhost:3000",   // Next.js local
-        "http://localhost:3001",    // Alt local
+        "http://localhost:3001",   // Alt local
         "http://localhost:5173",   // Vite dev
-        "https://pro-linka.vercel.app",           // ✅ Production domain
-        "https://pro-linka-git-*.vercel.app",      // Vercel branch previews
-        "https://pro-linka-*.vercel.app",        // All Vercel deployments
-        "https://*.vercel.app"                     // Any Vercel subdomain
+        "http://localhost:9090",   // Local backend
+        "https://prolinka.vercel.app",           // Vercel frontend
+        "https://prolinka-*.vercel.app",         // Vercel deployments
+        "https://*.vercel.app",                  // Any Vercel subdomain
+        "https://prolinka-1.onrender.com",       // Render backend
+        "https://*.onrender.com"                 // All Render apps
       ];
+
 
       
       // Allow no-origin requests (Postman, curl, mobile apps, server-side)

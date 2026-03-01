@@ -26,10 +26,11 @@ const getBaseUrl = () => {
     }
   }
   
-  // 3. Production fallback - NO localhost references
-  // Only use this if env var is not set (should be set in production!)
-  return "http://localhost:9090";
+  // 3. Production fallback - Use Render backend URL
+  // This is critical for production deployments without env vars
+  return "https://prolinka-1.onrender.com";
 };
+
 
 export const BASE_URL = getBaseUrl();
 
