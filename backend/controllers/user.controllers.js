@@ -17,77 +17,108 @@ import axios from "axios";
 ====================================================== */
 const ConnectionRequest = Connection;
 
-/* ================= PDF HELPER (CLOUDINARY UPDATED) ================= */
+/* ================= PDF HELPER (WITH PROFILE PICTURE) ================= */
 const convertUserDataToPDF = async (userData) => {
   const doc = new PDFDocument();
   const outputPath = crypto.randomBytes(32).toString("hex") + ".pdf";
   const stream = fs.createWriteStream(`uploads/${outputPath}`);
   doc.pipe(stream);
 
-  // Handle Cloudinary URL or local file for profile picture
+  // Profile Picture (left side)
+  let imageY = 50;
   if (userData?.userId?.profilePicture) {
     try {
       const profilePic = userData.userId.profilePicture;
       
-      // If it's a Cloudinary URL (starts with http)
       if (profilePic.startsWith('http')) {
         const response = await axios.get(profilePic, { 
           responseType: 'arraybuffer',
           timeout: 5000 
         });
         const imageBuffer = Buffer.from(response.data, 'binary');
-        doc.image(imageBuffer, {
-          align: "center",
-          width: 100,
-        });
+        doc.image(imageBuffer, 50, imageY, { width: 80, height: 80 });
       } 
-      // If it's a local file
       else if (fs.existsSync(`uploads/${profilePic}`)) {
-        doc.image(`uploads/${profilePic}`, {
-          align: "center",
-          width: 100,
-        });
+        doc.image(`uploads/${profilePic}`, 50, imageY, { width: 80, height: 80 });
       }
     } catch (error) {
       console.log("Error loading profile picture for PDF:", error.message);
-      // Continue without image if failed
     }
   }
 
+  // Text starts after image (right side)
+  const textX = 150;
+  
+  doc.fontSize(22).text(`Name: ${userData.userId?.name || 'User'}`, textX, imageY);
+  doc.fontSize(12).text(`Username: ${userData.userId?.username || 'username'}`, textX);
+  doc.fontSize(12).text(`Email: ${userData.userId?.email || 'email@example.com'}`, textX);
+  doc.fontSize(12).text(`Current Position: ${userData.currentPost || ''}`, textX);
 
-  doc.fontSize(14).text(`Name: ${userData.userId.name}`);
-  doc.fontSize(14).text(`Username: ${userData.userId.username}`);
-  doc.fontSize(14).text(`Email: ${userData.userId.email}`);
-  doc.fontSize(14).text(`Bio: ${userData.bio || ""}`);
-  doc.fontSize(14).text(`Current Position: ${userData.currentPost || ""}`);
-  doc.fontSize(14).text(`Experience: ${userData.experience || ""}`);
-  doc.fontSize(14).text(`Education: ${userData.education || ""}`);
-  doc.fontSize(14).text("Past Work:");
+  doc.moveDown(1);
 
-  if (Array.isArray(userData.pastWork)) {
+  // Bio
+  doc.fontSize(12).text(`Bio: ${userData.bio || ''}`);
+  doc.moveDown(0.5);
+
+  // Past Work
+  doc.fontSize(14).text('Past Work:');
+  
+  if (Array.isArray(userData.pastWork) && userData.pastWork.length > 0) {
     userData.pastWork.forEach((work) => {
-      doc.fontSize(12).text(`Company Name: ${work.company}`);
-      doc.fontSize(12).text(`Position: ${work.Position}`);
-      doc.fontSize(12).text(`Years: ${work.years}`);
+      doc.fontSize(12).text(`Company: ${work.company || 'N/A'}`);
+      doc.fontSize(12).text(`Position: ${work.position || 'N/A'}`);
+      doc.fontSize(12).text(`Years: ${work.year || work.years || 'N/A'}`);
+      doc.moveDown(0.5);
     });
+  } else {
+    doc.fontSize(12).text('No work experience added');
+  }
+
+  doc.moveDown(0.5);
+
+  // Education
+  doc.fontSize(14).text('Education:');
+  
+  if (Array.isArray(userData.education) && userData.education.length > 0) {
+    userData.education.forEach((edu) => {
+      doc.fontSize(12).text(`School: ${edu.school || 'N/A'}`);
+      doc.fontSize(12).text(`Degree: ${edu.degree || 'N/A'}`);
+      doc.fontSize(12).text(`Year: ${edu.year || 'N/A'}`);
+      doc.moveDown(0.5);
+    });
+  } else {
+    doc.fontSize(12).text('No education added');
   }
 
   doc.end();
   return outputPath;
 };
 
+
+
 /* ================= REGISTER ================= */
 export const register = async (req, res) => {
   try {
-    const { name, username, email, password } = req.body;
+    let { name, username, email, password } = req.body;
 
     if (!name || !username || !email || !password) {
       return res.status(400).json({ message: "All fields are required" });
     }
 
+    // ✅ FIX: Trim whitespace from username, email and name
+    username = username.trim();
+    email = email.trim().toLowerCase();
+    name = name.trim();
+
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.status(409).json({ message: "User already exists" });
+    }
+
+    // ✅ ADD: Check if username already exists (with trimmed value)
+    const existingUsername = await User.findOne({ username });
+    if (existingUsername) {
+      return res.status(409).json({ message: "Username already taken" });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -361,19 +392,44 @@ export const downloadProfile = async (req, res) => {
 /* ================= CONNECTION REQUEST ================= */
 export const sendConnectionRequest = async (req, res) => {
   const { token, connectionId } = req.body;
+  
+  // DEBUG: Log incoming request
+  console.log("🔍 [sendConnectionRequest] Request received");
+  console.log("   Token:", token ? `${token.substring(0, 10)}...` : "undefined");
+  console.log("   connectionId:", connectionId);
+  
   try {
+    // Find user by token
     const user = await User.findOne({ token });
-    if (!user) return res.status(404).json({ message: "User not found" });
+    console.log("   User lookup result:", user ? `Found: ${user.username} (${user._id})` : "Not found");
+    
+    if (!user) {
+      console.log("   ❌ User not found - returning 404");
+      return res.status(404).json({ message: "User not found. Please login again." });
+    }
+
+    // Validate connectionId
+    if (!connectionId) {
+      console.log("   ❌ connectionId is missing");
+      return res.status(400).json({ message: "Target user ID is required" });
+    }
+
+    console.log("   Looking for target user:", connectionId);
+
 
     const existing = await ConnectionRequest.findOne({
       userId: user._id,
       connectionId,
     });
+    
+    console.log("   Existing request check:", existing ? "Found existing request" : "No existing request");
+    
     if (existing)
       return res
         .status(409)
         .json({ message: "Connection request already sent" });
 
+    // Create new connection request
     const request = new ConnectionRequest({
       userId: user._id,
       connectionId,
@@ -382,13 +438,17 @@ export const sendConnectionRequest = async (req, res) => {
     });
 
     await request.save();
+    console.log("   ✅ Connection request saved successfully");
+    
     return res
       .status(200)
       .json({ message: "Connection request sent successfully" });
   } catch (error) {
+    console.error("   ❌ Error in sendConnectionRequest:", error);
     return res.status(500).json({ message: error.message });
   }
 };
+
 
 /* ================= GET MY CONNECTION REQUESTS ================= */
 // FIXED: Fetch both sent AND received requests with deduplication
@@ -581,13 +641,22 @@ export const getUserProfileAndUserBashedOnUsername = async (req, res) => {
   // and route param (/api/users/:username)
   let username = req.query.username || req.params.username;
   
+  // DEBUG: Log incoming request
+  console.log("🔍 [getUserProfileAndUserBashedOnUsername] Request received");
+  console.log("   Query params:", req.query);
+  console.log("   Route params:", req.params);
+  console.log("   Raw username:", JSON.stringify(username));
+  
   // ✅ CRITICAL FIX: Trim whitespace from username
   // Database has usernames with trailing spaces like "harish2148h " instead of "harish2148h"
   if (typeof username === 'string') {
     username = username.trim();
   }
   
+  console.log("   Trimmed username:", JSON.stringify(username));
+  
   if (!username) {
+    console.log("   ❌ Username is empty/required");
     return res.status(400).json({ message: "Username is required" });
   }
   
@@ -595,31 +664,55 @@ export const getUserProfileAndUserBashedOnUsername = async (req, res) => {
     // ✅ FIX: Use case-insensitive regex search for username
     // This handles cases where username in URL doesn't match exact case in DB
     // Also handles trailing spaces in database usernames
-    const user = await User.findOne({ 
+    console.log("   🔍 Searching with regex...");
+    let user = await User.findOne({ 
       username: { $regex: new RegExp(`^${username}$`, 'i') } 
     });
     
+    console.log("   📊 Regex search result:", user ? `Found: ${user.username}` : "Not found");
+    
     // If no match found with exact match, try with trimmed database values
     if (!user) {
+      console.log("   🔍 Trying fallback: scan all users for trimmed match...");
       const allUsers = await User.find({});
-      const trimmedUser = allUsers.find(u => u.username.trim().toLowerCase() === username.toLowerCase());
+      console.log(`   📊 Total users in DB: ${allUsers.length}`);
+      
+      const trimmedUser = allUsers.find(u => {
+        const match = u.username.trim().toLowerCase() === username.toLowerCase();
+        if (match) {
+          console.log(`   ✅ Fallback match found: "${u.username}" -> "${u.username.trim()}"`);
+        }
+        return match;
+      });
+      
       if (trimmedUser) {
         user = trimmedUser;
+        console.log(`   ✅ Using fallback user: ${user.username}`);
+      } else {
+        console.log("   ❌ No fallback match found");
+        // Log sample usernames for debugging
+        console.log("   📝 Sample usernames in DB:", allUsers.slice(0, 5).map(u => `"${u.username}"`));
       }
     }
 
     
     if (!user) {
+      console.log("   ❌ User not found - returning 404");
       return res.status(404).json({ message: "User not found" });
     }
 
+    console.log(`   ✅ User found: ${user.username} (${user._id})`);
+    
     let userProfile = await Profile.findOne({ userId: user._id }).populate(
       "userId",
       "name username email profilePicture coverPicture headline location"
     );
     
+    console.log("   📊 Profile query result:", userProfile ? "Found" : "Not found");
+    
     // If profile doesn't exist, create one (for existing users before fix)
     if (!userProfile) {
+      console.log("   ➕ Creating new profile for user...");
       userProfile = new Profile({
         userId: user._id,
         bio: "",
@@ -633,12 +726,14 @@ export const getUserProfileAndUserBashedOnUsername = async (req, res) => {
         "userId",
         "name username email profilePicture coverPicture headline location"
       );
+      console.log("   ✅ Profile created and populated");
     }
     
+    console.log("   ✅ Returning profile data successfully");
     return res.status(200).json(userProfile);
   }
   catch (error) {
-    console.error("Error in getUserProfileAndUserBashedOnUsername:", error);
+    console.error("   ❌ Error in getUserProfileAndUserBashedOnUsername:", error);
     return res.status(500).json({ message: error.message });
   }
-}
+};

@@ -27,13 +27,9 @@ import { uploadProfile, uploadCover } from "../config/cloudinary.js";
 
 /* ================= ROUTES ================= */
 
-// ✅ ADD: health / active check (debug safe)
-router.get("/", (req, res) => {
-  return res.status(200).json({ message: "USER ROUTES RUNNING" });
-});
-
 // Upload profile picture to Cloudinary - using factory function
 router.post("/upload", (req, res, next) => uploadProfile.single("profile_picture")(req, res, next), uploadProfilePicture);
+
 
 // Upload cover picture to Cloudinary - using factory function
 router.post("/upload_cover", (req, res, next) => uploadCover.single("cover_picture")(req, res, next), uploadCoverPicture);
@@ -83,5 +79,10 @@ router.get("/get_profile_base_on_username", getUserProfileAndUserBashedOnUsernam
 // ✅ NEW: Direct username route - matches the expected API call pattern
 // This endpoint is called as: GET /api/users/:username
 router.get("/:username", getUserProfileAndUserBashedOnUsername);
+
+// ✅ ADD: health / active check (debug safe) - MUST be after parameterized routes
+router.get("/", (req, res) => {
+  return res.status(200).json({ message: "USER ROUTES RUNNING" });
+});
 
 export default router;

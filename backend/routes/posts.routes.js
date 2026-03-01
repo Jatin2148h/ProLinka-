@@ -20,7 +20,9 @@ console.log("🔍 DEBUG - Posts Routes Loaded, uploadPost middleware ready");
 
 /* ================= ROUTES ================= */
 
-router.get("/", activeCheck);
+// Get all posts - must be BEFORE the root "/" route
+router.get("/posts", getAllPosts);
+
 
 // Create post with Cloudinary upload - with DEBUG
 router.post("/post", (req, res, next) => {
@@ -43,8 +45,8 @@ router.post("/post", (req, res, next) => {
 
 
 
-// Get all posts
-router.get("/posts", getAllPosts);
+
+
 
 // Delete post
 router.delete("/post", deletePost);
@@ -63,5 +65,8 @@ router.post("/increment__post_likes", increment_likes);
 
 // ✅ ADD: correct & frontend-friendly alias
 router.post("/increment_post_likes", increment_likes);
+
+// ✅ ADD: health / active check (MUST be after parameterized routes)
+router.get("/", activeCheck);
 
 export default router;

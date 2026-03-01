@@ -582,11 +582,13 @@ export async function getServerSideProps(context) {
       return { props: { userProfile: null, error: "Invalid username" } };
     }
     
-    // ✅ FIX: Use direct /api/users/:username endpoint as expected
-    // This matches the expected API call pattern: axios.get(`${API_URL}/api/users/${username}`)
-    const request = await clientServer.get(`/${encodeURIComponent(username)}`, {
+    // ✅ FIX: Use query param endpoint for username lookup
+    // Using /get_profile_base_on_username?username=xxx instead of /:username to avoid route conflicts
+    const request = await clientServer.get("/get_profile_base_on_username", {
+      params: { username: username },
       timeout: 10000 // 10 second timeout
     });
+
     
     // Check if the response has valid data
     if (!request.data) {
